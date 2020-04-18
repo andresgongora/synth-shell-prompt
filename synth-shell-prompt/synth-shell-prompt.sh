@@ -44,6 +44,7 @@
 [ "$(type -t include)" != 'function' ]&&{ include(){ { [ -z "$_IR" ]&&_IR="$PWD"&&cd $(dirname "${BASH_SOURCE[0]}")&&include "$1"&&cd "$_IR"&&unset _IR;}||{ local d=$PWD&&cd "$(dirname "$PWD/$1")"&&. "$(basename "$1")"&&cd "$d";}||{ echo "Include failed $PWD->$1"&&exit 1;};};}
 
 include '../bash-tools/bash-tools/color.sh'
+include '../bash-tools/bash-tools/shorten_path.sh'
 include '../config/synth-shell-prompt.config'
 
 
@@ -177,22 +178,6 @@ printSegment()
 ##
 prompt_command_hook()
 {
-	## LOAD EXTERNAL DEPENENCIES
-	## Only if the functions are not available
-	## If not, search in `common` folder
-	if [ "$(type -t shortenPath)" != 'function' ];
-	then
-		local dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-		source "$dir/../bash-tools/bash-tools/shorten_path.sh"
-	fi
-	if [ "$(type -t removeColorCodes)" != 'function' ];
-	then
-		local dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-		source "$dir/../bash-tools/bash-tools/color.sh"
-	fi
-
-
-
 	## GET PARAMETERS
 	local user=$USER
 	local host=$HOSTNAME
