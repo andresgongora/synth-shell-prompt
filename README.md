@@ -1,4 +1,4 @@
-![synth-shell](doc/synth-shell-status.jpg)
+![synth-shell-prompt](doc/synth-shell-prompt.jpg)
 
 
 **synth-shell-prompt** is not only fancy, but also useful:
