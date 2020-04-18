@@ -53,9 +53,6 @@ include '../config/synth-shell-prompt.config'
 
 synth_shell_prompt()
 {
-
-
-
 ##==============================================================================
 ##	FUNCTIONS
 ##==============================================================================
@@ -229,8 +226,9 @@ prompt_command_hook()
 
 
 
-##------------------------------------------------------------------------------
-##
+##==============================================================================
+##	MAIN
+##==============================================================================
 
 	## LOAD USER CONFIGURATION
 	local user_config_file="$HOME/.config/synth-shell/synth-shell-prompt.config"
@@ -322,12 +320,18 @@ prompt_command_hook()
 
 
 }
-## CALL SCRIPT
+## CALL SCRIPT FUNCTION
+## CHECK IF SCRIPT IS _NOT_ BEING SOURCED
 ## CHECK IF COLOR SUPPORTED
 ## - Check if compliant with Ecma-48 (ISO/IEC-6429)
 ##	- Call script
 ##	- Unset script
-if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+if [ "${BASH_SOURCE[0]}" == "${0}" ]; then
+	echo -e "Do not run this script, it will do nothing.\nPlease source it instead by running:\n"
+	echo -e "\t. ${BASH_SOURCE[0]}\n"
+
+elif [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
 	synth_shell_prompt
 	unset synth_shell_prompt
+
 fi

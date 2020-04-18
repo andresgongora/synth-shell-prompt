@@ -22,6 +22,14 @@
 
 You may install `synth-shell-prompt` from AUR: 
 https://aur.archlinux.org/packages/synth-shell-prompt-git/
+Once installed, test it with:
+```
+. /usr/bin/synth-shell-greeter
+```
+And if you like it, add it permanently to your terminal with:
+```
+echo ". /usr/bin/synth-shell-greeter" >> ~/.bashrc
+```
 
 
 
@@ -34,15 +42,17 @@ git clone --recursive https://github.com/andresgongora/synth-shell-greeter.git
 synth-shell-greeter/setup.sh
 ```
 
-You can then test your script by running it from wherever you installed it.
-Usually this is to your user's `.config` folder, so you should run:
+You can then test your script by sourcing it from wherever you installed it.
+Usually this is to your user's `.config` folder, so you should run the following
+command. Notice the `.`, this is meant to source the script to your
+terminal session (i.e. include it into your session).
 ```
-~/.config/synth-shell/synth-shell-greeter.sh
+. ~/.config/synth-shell/synth-shell-greeter.sh
 ```
 
-If you want it to appear everytime you open a new terminal, run
+If you want it to appear everytime you open a new terminal, run either
 ```
-echo "~/.config/synth-shell/synth-shell-greeter.sh" >> ~/.bashrc
+echo ". ~/.config/synth-shell/synth-shell-greeter.sh" >> ~/.bashrc
 ```
 
 
@@ -79,7 +89,7 @@ to indicate the state of the repository (can be changed in the config file):
 
 |          Local-Upstream          | Local branch has no changes | Local branch is dirty |
 |:--------------------------------:|:---------------------------:|:---------------------:|
-|            Up to date            |                             |           !           |
+|            Up to date            |                             |           □           |
 |     Ahead (you have to push)     |              ▲              |           △           |
 |     Behind (you have to pull)    |              ▼              |           ▽           |
 | Diverged (you have to pull-push) |              ●              |           ○           |
