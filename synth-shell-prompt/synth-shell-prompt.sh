@@ -154,8 +154,6 @@ printSegment()
 	local background_color=$3
 	local next_background_color=$4
 	local font_effect=$5
-	if [ -z "$separator_char" ]; then local separator_char='\uE0B0'; fi
-	if [ -z "$segment_padding" ]; then local segment_padding=' '; fi
 
 
 	## COMPUTE COLOR FORMAT CODES
@@ -164,9 +162,8 @@ printSegment()
 	local separator_format="\[$(getFormatCode -c $background_color -b $next_background_color)\]"
 
 
-
 	## GENERATE TEXT
-	printf "${text_format}${segment_padding}${text}${segment_padding}${separator_format}${separator_char}${no_color}"
+	printf "${text_format}${segment_padding}${text}${segment_padding}${separator_padding_left}${separator_format}${separator_char}${separator_padding_right}${no_color}"
 }
 
 
@@ -229,6 +226,15 @@ prompt_command_hook()
 
 
 
+	## PADDING
+	if $enable_vertical_padding; then
+		local vertical_padding="\n"
+	else
+		local vertical_padding=""
+	fi
+
+
+
 	## GENERATE COLOR FORMATTING SEQUENCES
 	## The sequences will confuse the bash prompt. To tell the terminal that they are non-printing
 	## characters, we must surround them by \[ and \]
@@ -236,12 +242,12 @@ prompt_command_hook()
 	local ps1_input_format="\[$(getFormatCode       -c $font_color_input -b $background_input -e $texteffect_input)\]"
 	local ps1_input="${ps1_input_format} "
 
-	local ps1_user_git=$(printSegment "\${SSP_USER}" $font_color_user $background_user $background_host $texteffect_user)
+	local ps1_user_git=$(printSegment "${prompt_horizontal_padding}\${SSP_USER}" $font_color_user $background_user $background_host $texteffect_user)
 	local ps1_host_git=$(printSegment "\${SSP_HOST}" $font_color_host $background_host $background_pwd $texteffect_host)
 	local ps1_pwd_git=$(printSegment "\${SSP_PWD}" $font_color_pwd $background_pwd $background_git $texteffect_pwd)
 	local ps1_git_git=$(printSegment "\${SSP_GIT}" $font_color_git $background_git $background_input $texteffect_git)
 
-	local ps1_user=$(printSegment "\${SSP_USER}" $font_color_user $background_user $background_host $texteffect_user)
+	local ps1_user=$(printSegment "${prompt_horizontal_padding}\${SSP_USER}" $font_color_user $background_user $background_host $texteffect_user)
 	local ps1_host=$(printSegment "\${SSP_HOST}" $font_color_host $background_host $background_pwd $texteffect_host)
 	local ps1_pwd=$(printSegment "\${SSP_PWD}" $font_color_pwd $background_pwd $background_input $texteffect_pwd)
 	local ps1_git=""
@@ -264,15 +270,6 @@ prompt_command_hook()
 
 
 
-	## Add extra new line on top of prompt
-	if $enable_vertical_padding; then
-		local vertical_padding="\n"
-	else
-		local vertical_padding=""
-	fi
-
-
-
 	## WINDOW TITLE
 	## Prevent messed up terminal-window titles
 	## Must be set in PS1
@@ -288,8 +285,8 @@ prompt_command_hook()
 
 
 	## BASH PROMPT - Generate prompt and remove format from the rest
-	SSP_PS1="${titlebar}${vertical_padding}${ps1_user}${ps1_host}${ps1_pwd}${ps1_git}${ps1_input}"
-	SSP_PS1_GIT="${titlebar}${vertical_padding}${ps1_user_git}${ps1_host_git}${ps1_pwd_git}${ps1_git_git}${ps1_input}"
+	SSP_PS1="${titlebar}${vertical_padding}${ps1_user}${ps1_host}${ps1_pwd}${ps1_git}${ps1_input}${prompt_final_padding}"
+	SSP_PS1_GIT="${titlebar}${vertical_padding}${ps1_user_git}${ps1_host_git}${ps1_pwd_git}${ps1_git_git}${ps1_input}${prompt_final_padding}"
 
 
 
