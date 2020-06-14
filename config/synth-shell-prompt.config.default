@@ -36,7 +36,7 @@ font_color_git="light-gray"
 background_git="dark-gray"
 texteffect_git="bold"
 
-font_color_input="cyan"
+font_color_input="45"
 background_input="none"
 texteffect_input="bold"
 
@@ -46,8 +46,13 @@ texteffect_input="bold"
 ## BEHAVIOR
 ##==============================================================================
 
-separator_char='\uE0B0'	# Separation character, '\uE0B0'=triangle
-enable_vertical_padding=true	# Add extra new line over prompt
+separator_char='\uE0B0'         # Separation character, '\uE0B0'=triangle
+separator_padding_left=''       #
+separator_padding_right=''      #
+prompt_horizontal_padding=''    #
+prompt_final_padding=''         #
+segment_padding=' '             #
+enable_vertical_padding=true    # Add extra new line over prompt
 
 
 

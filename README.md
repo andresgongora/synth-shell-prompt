@@ -24,11 +24,11 @@ You may install `synth-shell-prompt` from AUR:
 https://aur.archlinux.org/packages/synth-shell-prompt-git/
 Once installed, test it with:
 ```
-. /usr/bin/synth-shell-greeter
+. /usr/bin/synth-shell-prompt
 ```
 And if you like it, add it permanently to your terminal with:
 ```
-echo ". /usr/bin/synth-shell-greeter" >> ~/.bashrc
+echo ". /usr/bin/synth-shell-prompt" >> ~/.bashrc
 ```
 
 
@@ -38,8 +38,8 @@ echo ". /usr/bin/synth-shell-greeter" >> ~/.bashrc
 The included [setup script](setup.sh) will guide you step by step through the
 installatioj process. Just clone this repository and run it:
 ```
-git clone --recursive https://github.com/andresgongora/synth-shell-greeter.git
-synth-shell-greeter/setup.sh
+git clone --recursive https://github.com/andresgongora/synth-shell-prompt.git
+synth-shell-prompt/setup.sh
 ```
 
 You can then test your script by sourcing it from wherever you installed it.
@@ -47,12 +47,12 @@ Usually this is to your user's `.config` folder, so you should run the following
 command. Notice the `.`, this is meant to source the script to your
 terminal session (i.e. include it into your session).
 ```
-. ~/.config/synth-shell/synth-shell-greeter.sh
+. ~/.config/synth-shell/synth-shell-prompt.sh
 ```
 
 If you want it to appear everytime you open a new terminal, run either
 ```
-echo ". ~/.config/synth-shell/synth-shell-greeter.sh" >> ~/.bashrc
+echo ". ~/.config/synth-shell/synth-shell-prompt.sh" >> ~/.bashrc
 ```
 
 
