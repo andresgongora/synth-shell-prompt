@@ -45,7 +45,7 @@
 
 include '../bash-tools/bash-tools/color.sh'
 include '../bash-tools/bash-tools/shorten_path.sh'
-include '../config/synth-shell-prompt.config'
+include '../config/synth-shell-prompt.config.default'
 
 
 

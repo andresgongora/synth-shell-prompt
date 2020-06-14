@@ -30,12 +30,9 @@
 ##	EXTERNAL DEPENDENCIES
 ##==============================================================================
 [ "$(type -t include)" != 'function' ]&&{ include(){ { [ -z "$_IR" ]&&_IR="$PWD"&&cd $(dirname "${BASH_SOURCE[0]}")&&include "$1"&&cd "$_IR"&&unset _IR;}||{ local d=$PWD&&cd "$(dirname "$PWD/$1")"&&. "$(basename "$1")"&&cd "$d";}||{ echo "Include failed $PWD->$1"&&exit 1;};};}
-
 include 'bash-tools/bash-tools/user_io.sh'
 include 'bash-tools/bash-tools/hook_script.sh'
 include 'bash-tools/bash-tools/assemble_script.sh'
-
-
 
 
 
@@ -62,10 +59,12 @@ else
 fi
 
 
+
 ## DEFINE LOCAL VARIABLES
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )
 INPUT_SCRIPT="$DIR/synth-shell-prompt/synth-shell-prompt.sh"
-INPUT_CONFIG_DIR="$DIR/config/"
+INPUT_CONFIG_DIR="$DIR/config"
+
 
 
 ## HEADER TO BE ADDED AT THE TOP OF THE ASSEMBLED SCRIPT
@@ -87,8 +86,10 @@ OUTPUT_SCRIPT_HEADER=$(printf '%s'\
 	"##\n\n\n")
 
 
+
 ## SETUP SCRIPT
 assembleScript "$INPUT_SCRIPT" "$OUTPUT_SCRIPT" "$OUTPUT_SCRIPT_HEADER"
+
 
 
 ## SETUP CONFIGURATION FILES
@@ -96,13 +97,12 @@ assembleScript "$INPUT_SCRIPT" "$OUTPUT_SCRIPT" "$OUTPUT_SCRIPT_HEADER"
 cp -r "$INPUT_CONFIG_DIR/." "$OUTPUT_CONFIG_DIR/"
 
 
-## SETUP DEFAULT SYNTH-SHELL-prompt CONFIG FILE
+
+## SETUP DEFAULT SYNTH-SHELL-PROMPT CONFIG FILE
 CONFIG_FILE="$OUTPUT_CONFIG_DIR/synth-shell-prompt.config"
-if [ ! -f  "$CONFIG_FILE" ]; then
-	DISTRO=$(cat /etc/os-release | grep "ID=" | sed 's/ID=//g' | head -n 1)		
-	case "$DISTRO" in
-		'arch' )	cp "$OUTPUT_CONFIG_DIR/os/synth-shell-prompt.archlinux.config" "$CONFIG_FILE" ;;
-		'manjaro' )	cp "$OUTPUT_CONFIG_DIR/os/synth-shell-prompt.manjaro.config" "$CONFIG_FILE" ;;
-		*)		cp "$OUTPUT_CONFIG_DIR/synth-shell-prompt.config.default" "$CONFIG_FILE" ;;
-	esac
+if [ -f "$CONFIG_FILE" ]; then
+	CONFIG_FILE="${CONFIG_FILE}.new"
 fi
+
+cp "$INPUT_CONFIG_DIR/synth-shell-prompt.config.default" "$CONFIG_FILE"
+
