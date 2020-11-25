@@ -182,7 +182,6 @@ prompt_command_hook()
 	local git_branch="$(shortenPath "$(getGitBranch)" 10)"
 
 
-
 	## UPDATE BASH PROMPT ELEMENTS
 	SSP_USER="$user"
 	SSP_HOST="$host"
@@ -192,7 +191,6 @@ prompt_command_hook()
 	else
 		SSP_GIT="$git_branch"
 	fi
-
 
 
 	## CHOOSE PS1 FORMAT IF INSIDE GIT REPO
@@ -225,14 +223,12 @@ prompt_command_hook()
 	fi
 
 
-
 	## PADDING
 	if $enable_vertical_padding; then
 		local vertical_padding="\n"
 	else
 		local vertical_padding=""
 	fi
-
 
 
 	## GENERATE COLOR FORMATTING SEQUENCES
@@ -253,7 +249,6 @@ prompt_command_hook()
 	local ps1_git=""
 
 
-
 	## MAKE GIT OPTIONS GLOBALLY AVAILABLE
 	## This is needed because each time the prompt updates,
 	## it must re-check the status of the current git repository,
@@ -269,7 +264,6 @@ prompt_command_hook()
 	SSP_GIT_DIRTY_DIVERGED=$git_symbol_dirty_unpushedunpulled
 
 
-
 	## WINDOW TITLE
 	## Prevent messed up terminal-window titles
 	## Must be set in PS1
@@ -283,17 +277,14 @@ prompt_command_hook()
 	esac
 
 
-
 	## BASH PROMPT - Generate prompt and remove format from the rest
 	SSP_PS1="${titlebar}${vertical_padding}${ps1_user}${ps1_host}${ps1_pwd}${ps1_git}${ps1_input}${prompt_final_padding}"
 	SSP_PS1_GIT="${titlebar}${vertical_padding}${ps1_user_git}${ps1_host_git}${ps1_pwd_git}${ps1_git_git}${ps1_input}${prompt_final_padding}"
 
 
-
 	## For terminal line coloring, leaving the rest standard
 	none="$(tput sgr0)"
 	trap 'echo -ne "${none}"' DEBUG
-
 
 
 	## ADD HOOK TO UPDATE PS1 AFTER EACH COMMAND
@@ -302,21 +293,24 @@ prompt_command_hook()
 	## just before Bash displays a prompt.
 	## We want it to call our own command to truncate PWD and store it in NEW_PWD
 	PROMPT_COMMAND=prompt_command_hook
-
-
 }
-## CALL SCRIPT FUNCTION
-## CHECK IF SCRIPT IS _NOT_ BEING SOURCED
-## CHECK IF COLOR SUPPORTED
-## - Check if compliant with Ecma-48 (ISO/IEC-6429)
-##	- Call script
-##	- Unset script
-if [ "${BASH_SOURCE[0]}" == "${0}" ]; then
-	echo -e "Do not run this script, it will do nothing.\nPlease source it instead by running:\n"
-	echo -e "\t. ${BASH_SOURCE[0]}\n"
 
-elif [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-	synth_shell_prompt
+
+## CALL SCRIPT FUNCTION
+## CHECK IF INTERACTIVE SESSION
+##     - CHECK IF SCRIPT IS _NOT_ BEING SOURCED
+##     - CHECK IF COLOR SUPPORTED
+##         - Check if compliant with Ecma-48 (ISO/IEC-6429)
+##	       - Call script
+##	   - Unset script
+if [ -n "$( echo $- | grep i )" ]; then
+	if [ "${BASH_SOURCE[0]}" == "${0}" ]; then
+		echo -e "Do not run this script, it will do nothing.\nPlease source it instead by running:\n"
+		echo -e "\t. ${BASH_SOURCE[0]}\n"
+
+	elif [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+		synth_shell_prompt
+	fi
 	unset synth_shell_prompt
 	unset include
 fi
