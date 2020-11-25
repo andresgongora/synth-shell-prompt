@@ -297,13 +297,14 @@ prompt_command_hook()
 
 
 ## CALL SCRIPT FUNCTION
-## CHECK IF INTERACTIVE SESSION
-##     - CHECK IF SCRIPT IS _NOT_ BEING SOURCED
-##     - CHECK IF COLOR SUPPORTED
-##         - Check if compliant with Ecma-48 (ISO/IEC-6429)
-##	       - Call script
-##	   - Unset script
+## - CHECK IF SCRIPT IS _NOT_ BEING SOURCED
+## - CHECK IF COLOR SUPPORTED
+##     - Check if compliant with Ecma-48 (ISO/IEC-6429)
+##	   - Call script
+## - Unset script
+## If not running interactively, don't do anything
 if [ -n "$( echo $- | grep i )" ]; then
+
 	if [ "${BASH_SOURCE[0]}" == "${0}" ]; then
 		echo -e "Do not run this script, it will do nothing.\nPlease source it instead by running:\n"
 		echo -e "\t. ${BASH_SOURCE[0]}\n"
