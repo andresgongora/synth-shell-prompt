@@ -166,7 +166,7 @@ There are two branches in this repository:
 #                                    License
 <!--------------------------------------+-------------------------------------->
 
-Copyright (c) 2014-2020, Andres Gongora - www.andresgongora.com
+Copyright (c) 2014-2021, Andres Gongora - www.andresgongora.com
 
 * This software is released under a GPLv3 license.
   Read [license-GPLv3.txt](LICENSE),
