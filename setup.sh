@@ -27,7 +27,7 @@
 
 
 ##==============================================================================
-##	EXTERNAL DEPENDENCIES
+##	INCLUDE DEPENDENCIES
 ##==============================================================================
 [ "$(type -t include)" != 'function' ]&&{ include(){ { [ -z "$_IR" ]&&_IR="$PWD"&&cd $(dirname "${BASH_SOURCE[0]}")&&include "$1"&&cd "$_IR"&&unset _IR;}||{ local d=$PWD&&cd "$(dirname "$PWD/$1")"&&. "$(basename "$1")"&&cd "$d";}||{ echo "Include failed $PWD->$1"&&exit 1;};};}
 include 'bash-tools/bash-tools/user_io.sh'
@@ -37,28 +37,47 @@ include 'bash-tools/bash-tools/assemble_script.sh'
 
 
 
+
+
 ##==============================================================================
-##	SETUP
+##	SELECT SETUP LOCATION (PROMPT USER IF NEED BE)
 ##==============================================================================
 
 ## SWITCH BETWEEN AUTOMATIC AND USER INSTALLATION
 if [ "$#" -eq 0 ]; then
-	OUTPUT_SCRIPT="$HOME/.config/synth-shell/synth-shell-prompt.sh"
+	OUTPUT_SCRIPT="$HOME/.config/synth-shell/synth-shell-greeter.sh"
 	OUTPUT_CONFIG_DIR="$HOME/.config/synth-shell"
-	printInfo "Installing script as $OUTPUT_SCRIPT"
-	USER_CHOICE=$(promptUser "Add hook your .bashrc file or equivalent?\n\tRequired for autostart on new terminals" "[Y]/[n]?" "yYnN" "y")
-	case "$USER_CHOICE" in
-		""|y|Y )	hookScript $OUTPUT_SCRIPT ;;
-		n|N )		;;
-		*)		printError "Invalid option"; exit 1
-	esac
+	USER_CHOICE=""
 		
-else
+elif [ "$#" -eq 2 ]; then
 	OUTPUT_SCRIPT="$1"
 	OUTPUT_CONFIG_DIR="$2"
+	USER_CHOICE="y"
+	
+else
+	printError "Wrong number of arguments passed to setup script"
+	exit 1
 fi
 
+## CREATE HOOK
+printInfo "Installing script as $OUTPUT_SCRIPT"
+if [ -z "$USER_CHOICE" ]; then
+	USER_CHOICE=$(promptUser "Add hook your .bashrc file or equivalent?\n\tRequired for autostart on new terminals" "[Y]/[n]?" "yYnN" "y")
+fi
+case "$USER_CHOICE" in
+	""|y|Y )	hookScript $OUTPUT_SCRIPT ;;
+	n|N )		;;
+	*)		printError "Invalid option"; exit 1
+esac
 
+
+
+
+
+
+##==============================================================================
+##	EMPLACE SCRIPT
+##==============================================================================
 
 ## DEFINE LOCAL VARIABLES
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )
@@ -84,8 +103,15 @@ OUTPUT_SCRIPT_HEADER=$(printf '%s'\
 	"##  https://github.com/andresgongora/synth-shell/\n"\
 	"##\n"\
 	"##\n\n\n")
+	
+	
+	
+	
+	
 
-
+##==============================================================================
+##	EMPLACE CONFIGURATION FILES
+##==============================================================================
 
 ## SETUP SCRIPT
 assembleScript "$INPUT_SCRIPT" "$OUTPUT_SCRIPT" "$OUTPUT_SCRIPT_HEADER"
