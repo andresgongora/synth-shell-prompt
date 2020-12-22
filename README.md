@@ -1,5 +1,6 @@
 ![synth-shell-prompt](doc/synth-shell-prompt.jpg)
 
+This script is part of [synth-shell](https://github.com/andresgongora/synth-shell)
 
 **synth-shell-prompt** is not only fancy, but also useful:
 - Configurable colors and aesthetics.
