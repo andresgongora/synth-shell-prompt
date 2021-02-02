@@ -195,17 +195,16 @@ prompt_command_hook()
 
 	## CHOOSE PS1 FORMAT IF INSIDE GIT REPO
 	if [ ! -z "$(getGitBranch)" ] && $SSP_GIT_SHOW; then
-		if [ -n "${VIRTUAL_ENV}" ]; then
-			PS1="$SSP_PS1_GIT \e[0;31m(`basename ${VIRTUAL_ENV}`)\e[0m "
-		else
-			PS1=$SSP_PS1_GIT
-		fi
+		PS1=$SSP_PS1_GIT
 	else
-		if [ -n "${VIRTUAL_ENV}" ]; then
-			PS1="$SSP_PS1 \e[0;31m(`basename ${VIRTUAL_ENV}`)\e[0m "
-		else
-			PS1=$SSP_PS1
-		fi
+		PS1=$SSP_PS1
+	fi
+
+	## CHECK IF IN A PYTHON VIRTUAL ENV
+	if [ -n "${VIRTUAL_ENV}" ]; then
+		## PYTHON VIRTUALENV PROMPT
+		SSP_PS1_VIRTENV="\e[0;31m($(basename ${VIRTUAL_ENV}))\e[0m"
+		PS1="$PS1 $SSP_PS1_VIRTENV"
 	fi
 }
 
