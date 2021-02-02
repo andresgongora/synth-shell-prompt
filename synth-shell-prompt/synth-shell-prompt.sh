@@ -195,9 +195,17 @@ prompt_command_hook()
 
 	## CHOOSE PS1 FORMAT IF INSIDE GIT REPO
 	if [ ! -z "$(getGitBranch)" ] && $SSP_GIT_SHOW; then
-		PS1=$SSP_PS1_GIT
+		if [ -n "${VIRTUAL_ENV}" ]; then
+			PS1="$SSP_PS1_GIT \e[0;31m(`basename ${VIRTUAL_ENV}`)\e[0m "
+		else
+			PS1=$SSP_PS1_GIT
+		fi
 	else
-		PS1=$SSP_PS1
+		if [ -n "${VIRTUAL_ENV}" ]; then
+			PS1="$SSP_PS1 \e[0;31m(`basename ${VIRTUAL_ENV}`)\e[0m "
+		else
+			PS1=$SSP_PS1
+		fi
 	fi
 }
 
