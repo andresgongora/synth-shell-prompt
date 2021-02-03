@@ -131,7 +131,7 @@ getGitBranch()
 
 
 			## RETURN STRING
-			echo "$branch $symbol"	
+			echo "$branch$symbol"	
 		fi
 	fi
 	

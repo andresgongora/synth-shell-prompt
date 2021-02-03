@@ -38,7 +38,7 @@ font_color_git="light-gray"
 background_git="dark-gray"
 texteffect_git="bold"
 
-font_color_pyenv="red"
+font_color_pyenv="white"
 background_pyenv="blue"
 texteffect_pyenv="bold"
 
@@ -67,11 +67,11 @@ enable_vertical_padding=true    # Add extra new line over prompt
 ##==============================================================================
 
 git_symbol_synced=''
-git_symbol_unpushed='▲'
-git_symbol_unpulled='▼'
-git_symbol_unpushedunpulled='●'
-git_symbol_dirty='□'
-git_symbol_dirty_unpushed='△'
-git_symbol_dirty_unpulled='▽'
-git_symbol_dirty_unpushedunpulled='○'
+git_symbol_unpushed=' ▲'
+git_symbol_unpulled=' ▼'
+git_symbol_unpushedunpulled=' ●'
+git_symbol_dirty=' □'
+git_symbol_dirty_unpushed=' △'
+git_symbol_dirty_unpulled=' ▽'
+git_symbol_dirty_unpushedunpulled=' ○'
 
