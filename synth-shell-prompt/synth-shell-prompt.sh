@@ -199,6 +199,13 @@ prompt_command_hook()
 	else
 		PS1=$SSP_PS1
 	fi
+
+	## CHECK IF IN A PYTHON VIRTUAL ENV
+	if [ -n "${VIRTUAL_ENV}" ]; then
+		## PYTHON VIRTUALENV PROMPT
+		SSP_PS1_VIRTENV="\e[0;31m($(basename ${VIRTUAL_ENV}))\e[0m"
+		PS1="$PS1 $SSP_PS1_VIRTENV"
+	fi
 }
 
 
