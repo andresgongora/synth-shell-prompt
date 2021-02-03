@@ -20,6 +20,8 @@
 ##
 ##==============================================================================
 
+format="USER HOST PWD GIT PYENV"
+
 font_color_user="white"
 background_user="blue"
 texteffect_user="bold"
@@ -35,6 +37,10 @@ texteffect_pwd="bold"
 font_color_git="light-gray"
 background_git="dark-gray"
 texteffect_git="bold"
+
+font_color_pyenv="red"
+background_pyenv="blue"
+texteffect_pyenv="bold"
 
 font_color_input="45"
 background_input="none"
@@ -60,7 +66,6 @@ enable_vertical_padding=true    # Add extra new line over prompt
 ## GIT
 ##==============================================================================
 
-show_git=true			# Enable/Disable git info if inside a repo
 git_symbol_synced=''
 git_symbol_unpushed='▲'
 git_symbol_unpulled='▼'

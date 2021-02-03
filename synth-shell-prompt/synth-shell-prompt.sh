@@ -140,12 +140,16 @@ getGitBranch()
 }
 
 
+getPyenv()
+{
+	if [ -n "$VIRTUAL_ENV" ]; then
+		local pyenv=$(basename ${VIRTUAL_ENV})
+		echo "$pyenv"
+	fi
+}
 
 
 
-
-##------------------------------------------------------------------------------
-##
 printSegment()
 {
 	## GET PARAMETERS
@@ -168,44 +172,104 @@ printSegment()
 
 
 
+get_colors_for_element()
+{
+	case $1 in
+		"USER")  echo ${SSP_COLORS_USER[@]} ;;
+		"HOST")  echo ${SSP_COLORS_HOST[@]} ;;
+		"PWD")   echo ${SSP_COLORS_PWD[@]}  ;;
+		"GIT")   echo ${SSP_COLORS_GIT[@]}  ;;
+		"PYENV") echo ${SSP_COLORS_PYENV[@]};;
+		"INPUT") echo ${SSP_COLORS_INPUT[@]};;
+		*)
+	esac 
+}
 
 
 
-##------------------------------------------------------------------------------
-##
+combine_elements()
+{
+	local first=$1
+	local second=$2
+	local colors_first=($(get_colors_for_element $first))
+	local colors_second=($(get_colors_for_element $second))
+
+
+	case $first in
+		"USER")  local text="$user" ;;
+		"HOST")  local text="$host" ;;
+		"PWD")   local text="$path" ;;
+		"GIT")   local text="$git_branch" ;;
+		"PYENV") local text="$pyenv" ;;
+		"INPUT") local text="" ;;
+		*)       local text="" ;;
+	esac
+
+
+	local text_color=${colors_first[0]}
+	local bg_color=${colors_first[1]}
+	local next_bg_color=${colors_second[1]}
+	local text_effect=${colors_first[2]}
+	printSegment "$text" "$text_color" "$bg_color" "$next_bg_color" "$text_effect"
+}
+
+
+
+
+##==============================================================================
+##	HOOK
+##==============================================================================
+
 prompt_command_hook()
 {
 	## GET PARAMETERS
+	## This might be a bit redundant, but it makes it easier to maintain
+	local elements=(${SSP_ELEMENTS[@]})
 	local user=$USER
 	local host=$HOSTNAME
 	local path="$(shortenPath "$PWD" 20)"
-	local git_branch="$(shortenPath "$(getGitBranch)" 10)"
+	local git_branch="$(getGitBranch)"
+	local pyenv="$(getPyenv)"
 
 
-	## UPDATE BASH PROMPT ELEMENTS
-	SSP_USER="$user"
-	SSP_HOST="$host"
-	SSP_PWD="$path"
+	## ADAPT DYNAMICALLY ELEMENTS TO BE SHOWN
+	## Check if elements such as GIT and the Python environment should be
+	## shown and adapt the variables as needed. This usually implies removing
+	## the appropriate field from the "elements" array if the user set them
 	if [ -z "$git_branch" ]; then
-		SSP_GIT=""
-	else
-		SSP_GIT="$git_branch"
+		elements=( ${elements[@]/"GIT"} ) # Remove GIT from elements to be shown
+	fi
+	
+	if [ -z "$pyenv" ]; then
+		elements=( ${elements[@]/"PYENV"} ) # Remove PYENV from elements to be shown
 	fi
 
 
-	## CHOOSE PS1 FORMAT IF INSIDE GIT REPO
-	if [ ! -z "$(getGitBranch)" ] && $SSP_GIT_SHOW; then
-		PS1=$SSP_PS1_GIT
-	else
-		PS1=$SSP_PS1
-	fi
+	## CONSTRUCT PROMPT ITERATIVELY
+	## Iterate through all elements to be shown and combine them. Stop once only
+	## 1 element is left, which should tbe the "INPUT" element; then apply the
+	## INPUT formating.
+	## Notice that this reuses the PS1 variables over and over again, and appends
+	## all extra formating elements to the end of it.
+	PS1="$SSP_PS1_BASE"
+	while [ "${#elements[@]}" -gt 1 ]; do
+		local current=${elements[0]}
+		local next=${elements[1]}
+		local elements=("${elements[@]:1}") #remove the 1st element
 
-	## CHECK IF IN A PYTHON VIRTUAL ENV
-	if [ -n "${VIRTUAL_ENV}" ]; then
-		## PYTHON VIRTUALENV PROMPT
-		SSP_PS1_VIRTENV="\e[0;31m($(basename ${VIRTUAL_ENV}))\e[0m"
-		PS1="$PS1 $SSP_PS1_VIRTENV"
-	fi
+		PS1="$PS1$(combine_elements $current $next)"
+	done
+
+	local input_colors=($(get_colors_for_element ${elements[0]}))
+	local input_color=${input_colors[0]}
+	local input_bg=${input_colors[1]}
+	local input_effect=${input_colors[2]}
+	local input_format="\[$(getFormatCode -c $input_color -b $input_bg -e $input_effect)\]"
+	PS1="$PS1 $input_format"
+
+
+	## Once this point is reached, PS1 is formated and set. The terminal session
+	## will then use that variable to prompt the user :)
 }
 
 
@@ -230,50 +294,8 @@ prompt_command_hook()
 	fi
 
 
-	## PADDING
-	if $enable_vertical_padding; then
-		local vertical_padding="\n"
-	else
-		local vertical_padding=""
-	fi
-
-
-	## GENERATE COLOR FORMATTING SEQUENCES
-	## The sequences will confuse the bash prompt. To tell the terminal that they are non-printing
-	## characters, we must surround them by \[ and \]
-	local no_color="\[$(getFormatCode -e reset)\]"
-	local ps1_input_format="\[$(getFormatCode       -c $font_color_input -b $background_input -e $texteffect_input)\]"
-	local ps1_input="${ps1_input_format} "
-
-	local ps1_user_git=$(printSegment "${prompt_horizontal_padding}\${SSP_USER}" $font_color_user $background_user $background_host $texteffect_user)
-	local ps1_host_git=$(printSegment "\${SSP_HOST}" $font_color_host $background_host $background_pwd $texteffect_host)
-	local ps1_pwd_git=$(printSegment "\${SSP_PWD}" $font_color_pwd $background_pwd $background_git $texteffect_pwd)
-	local ps1_git_git=$(printSegment "\${SSP_GIT}" $font_color_git $background_git $background_input $texteffect_git)
-
-	local ps1_user=$(printSegment "${prompt_horizontal_padding}\${SSP_USER}" $font_color_user $background_user $background_host $texteffect_user)
-	local ps1_host=$(printSegment "\${SSP_HOST}" $font_color_host $background_host $background_pwd $texteffect_host)
-	local ps1_pwd=$(printSegment "\${SSP_PWD}" $font_color_pwd $background_pwd $background_input $texteffect_pwd)
-	local ps1_git=""
-
-
-	## MAKE GIT OPTIONS GLOBALLY AVAILABLE
-	## This is needed because each time the prompt updates,
-	## it must re-check the status of the current git repository,
-	## and to do so, it must remember the user's configuation
-	SSP_GIT_SHOW=$show_git
-	SSP_GIT_SYNCED=$git_symbol_synced
-	SSP_GIT_AHEAD=$git_symbol_unpushed
-	SSP_GIT_BEHIND=$git_symbol_unpulled
-	SSP_GIT_DIVERGED=$git_symbol_unpushedunpulled
-	SSP_GIT_DIRTY=$git_symbol_dirty
-	SSP_GIT_DIRTY_AHEAD=$git_symbol_dirty_unpushed
-	SSP_GIT_DIRTY_BEHIND=$git_symbol_dirty_unpulled
-	SSP_GIT_DIRTY_DIVERGED=$git_symbol_dirty_unpushedunpulled
-
-
 	## WINDOW TITLE
-	## Prevent messed up terminal-window titles
-	## Must be set in PS1
+	## Prevent messed up terminal-window titles, must be set in the PS1 variable
 	case $TERM in
 	xterm*|rxvt*)
 		local titlebar="\[\033]0;\${SSP_USER}@\${SSP_HOST}: \${SSP_PWD}\007\]"
@@ -284,9 +306,33 @@ prompt_command_hook()
 	esac
 
 
-	## BASH PROMPT - Generate prompt and remove format from the rest
-	SSP_PS1="${titlebar}${vertical_padding}${ps1_user}${ps1_host}${ps1_pwd}${ps1_git}${ps1_input}${prompt_final_padding}"
-	SSP_PS1_GIT="${titlebar}${vertical_padding}${ps1_user_git}${ps1_host_git}${ps1_pwd_git}${ps1_git_git}${ps1_input}${prompt_final_padding}"
+	## PADDING
+	if $enable_vertical_padding; then
+		local vertical_padding="\n"
+	else
+		local vertical_padding=""
+	fi
+
+
+    ## CONFIG FOR "prompt_command_hook()"
+	SSP_ELEMENTS=($format "INPUT") # Append INPUT to elements that have to be shown
+	SSP_COLORS_USER=($font_color_user $background_user $texteffect_user)
+	SSP_COLORS_HOST=($font_color_host $background_host $texteffect_host)
+	SSP_COLORS_PWD=($font_color_pwd $background_pwd $texteffect_pwd)
+    SSP_COLORS_GIT=($font_color_git $background_git $texteffect_git)
+    SSP_COLORS_PYENV=($font_color_pyenv $background_pyenv $texteffect_pyenv)
+	SSP_COLORS_INPUT=($font_color_input $background_input $texteffect_input)
+
+	SSP_GIT_SYNCED=$git_symbol_synced
+	SSP_GIT_AHEAD=$git_symbol_unpushed
+	SSP_GIT_BEHIND=$git_symbol_unpulled
+	SSP_GIT_DIVERGED=$git_symbol_unpushedunpulled
+	SSP_GIT_DIRTY=$git_symbol_dirty
+	SSP_GIT_DIRTY_AHEAD=$git_symbol_dirty_unpushed
+	SSP_GIT_DIRTY_BEHIND=$git_symbol_dirty_unpulled
+	SSP_GIT_DIRTY_DIVERGED=$git_symbol_dirty_unpushedunpulled
+
+	SSP_PS1_BASE="${titlebar}${vertical_padding}"
 
 
 	## For terminal line coloring, leaving the rest standard
@@ -301,6 +347,10 @@ prompt_command_hook()
 	## We want it to call our own command to truncate PWD and store it in NEW_PWD
 	PROMPT_COMMAND=prompt_command_hook
 }
+
+
+
+
 
 
 ## CALL SCRIPT FUNCTION

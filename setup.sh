@@ -45,7 +45,7 @@ include 'bash-tools/bash-tools/assemble_script.sh'
 
 ## SWITCH BETWEEN AUTOMATIC AND USER INSTALLATION
 if [ "$#" -eq 0 ]; then
-	OUTPUT_SCRIPT="$HOME/.config/synth-shell/synth-shell-greeter.sh"
+	OUTPUT_SCRIPT="$HOME/.config/synth-shell/synth-shell-prompt.sh"
 	OUTPUT_CONFIG_DIR="$HOME/.config/synth-shell"
 	USER_CHOICE=""
 		
