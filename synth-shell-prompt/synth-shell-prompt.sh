@@ -245,13 +245,26 @@ prompt_command_hook()
 	fi
 
 
+	## WINDOW TITLE
+	## Prevent messed up terminal-window titles, must be set in the PS1 variable
+	case $TERM in
+	xterm*|rxvt*)
+		SSP_PWD="$path"
+		local titlebar="\[\033]0;\${USER}@\${HOSTNAME}: \${SSP_PWD}\007\]"
+		;;
+	*)
+		local titlebar=""
+		;;
+	esac
+
+
 	## CONSTRUCT PROMPT ITERATIVELY
 	## Iterate through all elements to be shown and combine them. Stop once only
 	## 1 element is left, which should tbe the "INPUT" element; then apply the
 	## INPUT formating.
 	## Notice that this reuses the PS1 variables over and over again, and appends
 	## all extra formating elements to the end of it.
-	PS1="$SSP_PS1_BASE"
+	PS1="${titlebar}${SSP_VERTICAL_PADDING}"
 	while [ "${#elements[@]}" -gt 1 ]; do
 		local current=${elements[0]}
 		local next=${elements[1]}
@@ -294,18 +307,6 @@ prompt_command_hook()
 	fi
 
 
-	## WINDOW TITLE
-	## Prevent messed up terminal-window titles, must be set in the PS1 variable
-	case $TERM in
-	xterm*|rxvt*)
-		local titlebar="\[\033]0;\${SSP_USER}@\${SSP_HOST}: \${SSP_PWD}\007\]"
-		;;
-	*)
-		local titlebar=""
-		;;
-	esac
-
-
 	## PADDING
 	if $enable_vertical_padding; then
 		local vertical_padding="\n"
@@ -322,6 +323,7 @@ prompt_command_hook()
     SSP_COLORS_GIT=($font_color_git $background_git $texteffect_git)
     SSP_COLORS_PYENV=($font_color_pyenv $background_pyenv $texteffect_pyenv)
 	SSP_COLORS_INPUT=($font_color_input $background_input $texteffect_input)
+	SSP_VERTICAL_PADDING=$vertical_padding
 
 	SSP_GIT_SYNCED=$git_symbol_synced
 	SSP_GIT_AHEAD=$git_symbol_unpushed
@@ -331,8 +333,6 @@ prompt_command_hook()
 	SSP_GIT_DIRTY_AHEAD=$git_symbol_dirty_unpushed
 	SSP_GIT_DIRTY_BEHIND=$git_symbol_dirty_unpulled
 	SSP_GIT_DIRTY_DIVERGED=$git_symbol_dirty_unpushedunpulled
-
-	SSP_PS1_BASE="${titlebar}${vertical_padding}"
 
 
 	## For terminal line coloring, leaving the rest standard
