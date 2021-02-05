@@ -26,6 +26,10 @@ You may add your name, email, a link to your personal web-site/blog/profile
 	www.andresgongora.com  
 	Main developer
 
+
+*	**mcgillij**  
+	2021 - Support for Python environments and terraform, and other fixes
+
 	
 *	**Sami Olmari**  
 	<sami@olmari.fi>  
@@ -36,8 +40,8 @@ You may add your name, email, a link to your personal web-site/blog/profile
 *	**PeterJRiches**  
 	2019 - Proofreading of comments and explanation fixes
 
-	
 
+	
 
 
 
