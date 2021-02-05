@@ -7,6 +7,8 @@
 ## -  HOST: shows the host's name.
 ## -   PWD: shows the current directory.
 ## -   GIT: if inside a git repository, shows the name of current branch.
+## - PYENV: if inside a Python Virtual environment
+## -    TF: if inside a Terraform Workspace
 ## - INPUT: actual bash input.
 ## 
 ## Valid color options:
@@ -20,7 +22,7 @@
 ##
 ##==============================================================================
 
-format="USER HOST PWD GIT PYENV"
+format="USER HOST PWD GIT PYENV TF"
 
 font_color_user="white"
 background_user="blue"
@@ -41,6 +43,10 @@ texteffect_git="bold"
 font_color_pyenv="white"
 background_pyenv="blue"
 texteffect_pyenv="bold"
+
+font_color_tf="purple"
+background_tf="light-purple"
+texteffect_tf="bold"
 
 font_color_input="45"
 background_input="none"
