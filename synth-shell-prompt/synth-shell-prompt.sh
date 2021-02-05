@@ -84,7 +84,7 @@ getGitBranch()
 
 		## CHECK IF IN A GIT REPOSITORY, OTHERWISE SKIP
 		local branch=$(git branch 2> /dev/null |\
-		             sed -n '/^[^*]/d;s/*\s*\(.*\)/\1/p')	
+		             sed -n '/^[^*]/d;s/*\s*\(.*\)/\1/p')
 
 		if [[ -n "$branch" ]]; then
 
@@ -92,12 +92,12 @@ getGitBranch()
 			## This information contains whether the current branch is
 			## ahead, behind or diverged (ahead & behind), as well as
 			## whether any file has been modified locally (is dirty).
-			## --porcelain: script friendly outbut.
+			## --porcelain: script friendly output.
 			## -b:          show branch tracking info.
 			## -u no:       do not list untracked/dirty files
 			## From the first line we get whether we are synced, and if
 			## there are more lines, then we know it is dirty.
-			## NOTE: this requires that tyou fetch your repository,
+			## NOTE: this requires that you fetch your repository,
 			##       otherwise your information is outdated.
 			local is_dirty=false &&\
 				       [[ -n "$(git status --porcelain)" ]] &&\
@@ -139,6 +139,18 @@ getGitBranch()
 	echo ""
 }
 
+getTerraform()
+{
+	## Check if we are in a terraform directory
+	if [ -d .terraform ]; then
+		## Check if the terraform binary is in the path
+		if ( which terraform > /dev/null 2>&1 ); then
+			## Get the terraform workspace
+			local tf="$(terraform workspace show 2> /dev/null | tr -d '\n')"
+			echo "$tf"
+		fi
+	fi
+}
 
 getPyenv()
 {
@@ -175,12 +187,13 @@ printSegment()
 get_colors_for_element()
 {
 	case $1 in
-		"USER")  echo ${SSP_COLORS_USER[@]} ;;
-		"HOST")  echo ${SSP_COLORS_HOST[@]} ;;
-		"PWD")   echo ${SSP_COLORS_PWD[@]}  ;;
-		"GIT")   echo ${SSP_COLORS_GIT[@]}  ;;
-		"PYENV") echo ${SSP_COLORS_PYENV[@]};;
-		"INPUT") echo ${SSP_COLORS_INPUT[@]};;
+		"USER")  echo "${SSP_COLORS_USER[@]}" ;;
+		"HOST")  echo "${SSP_COLORS_HOST[@]}" ;;
+		"PWD")   echo "${SSP_COLORS_PWD[@]}"  ;;
+		"GIT")   echo "${SSP_COLORS_GIT[@]}"  ;;
+		"PYENV") echo "${SSP_COLORS_PYENV[@]}";;
+		"TF")    echo "${SSP_COLORS_TF[@]}"   ;;
+		"INPUT") echo "${SSP_COLORS_INPUT[@]}";;
 		*)
 	esac 
 }
@@ -201,6 +214,7 @@ combine_elements()
 		"PWD")   local text="$path" ;;
 		"GIT")   local text="$git_branch" ;;
 		"PYENV") local text="$pyenv" ;;
+		"TF")    local text="$tf" ;;
 		"INPUT") local text="" ;;
 		*)       local text="" ;;
 	esac
@@ -230,6 +244,7 @@ prompt_command_hook()
 	local path="$(shortenPath "$PWD" 20)"
 	local git_branch="$(getGitBranch)"
 	local pyenv="$(getPyenv)"
+	local tf="$(getTerraform)"
 
 
 	## ADAPT DYNAMICALLY ELEMENTS TO BE SHOWN
@@ -242,6 +257,10 @@ prompt_command_hook()
 	
 	if [ -z "$pyenv" ]; then
 		elements=( ${elements[@]/"PYENV"} ) # Remove PYENV from elements to be shown
+	fi
+
+	if [ -z "$tf" ]; then
+		elements=( ${elements[@]/"TF"} ) # Remove TF from elements to be shown
 	fi
 
 
@@ -260,10 +279,10 @@ prompt_command_hook()
 
 	## CONSTRUCT PROMPT ITERATIVELY
 	## Iterate through all elements to be shown and combine them. Stop once only
-	## 1 element is left, which should tbe the "INPUT" element; then apply the
-	## INPUT formating.
+	## 1 element is left, which should be the "INPUT" element; then apply the
+	## INPUT formatting.
 	## Notice that this reuses the PS1 variables over and over again, and appends
-	## all extra formating elements to the end of it.
+	## all extra formatting elements to the end of it.
 	PS1="${titlebar}${SSP_VERTICAL_PADDING}"
 	while [ "${#elements[@]}" -gt 1 ]; do
 		local current=${elements[0]}
@@ -281,7 +300,7 @@ prompt_command_hook()
 	PS1="$PS1 $input_format"
 
 
-	## Once this point is reached, PS1 is formated and set. The terminal session
+	## Once this point is reached, PS1 is formatted and set. The terminal session
 	## will then use that variable to prompt the user :)
 }
 
@@ -320,8 +339,9 @@ prompt_command_hook()
 	SSP_COLORS_USER=($font_color_user $background_user $texteffect_user)
 	SSP_COLORS_HOST=($font_color_host $background_host $texteffect_host)
 	SSP_COLORS_PWD=($font_color_pwd $background_pwd $texteffect_pwd)
-    SSP_COLORS_GIT=($font_color_git $background_git $texteffect_git)
-    SSP_COLORS_PYENV=($font_color_pyenv $background_pyenv $texteffect_pyenv)
+	SSP_COLORS_GIT=($font_color_git $background_git $texteffect_git)
+	SSP_COLORS_PYENV=($font_color_pyenv $background_pyenv $texteffect_pyenv)
+	SSP_COLORS_TF=($font_color_tf $background_tf $texteffect_tf)
 	SSP_COLORS_INPUT=($font_color_input $background_input $texteffect_input)
 	SSP_VERTICAL_PADDING=$vertical_padding
 
