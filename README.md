@@ -43,6 +43,11 @@ git clone --recursive https://github.com/andresgongora/synth-shell-prompt.git
 synth-shell-prompt/setup.sh
 ```
 
+Then install the required fonts packages to display the triangle separators properly:
+- ArchLinux: sudo pacman -S powerline-fonts
+- Debian/Ubuntu: sudo apt install fonts-powerline
+
+
 You can then test your script by sourcing it from wherever you installed it.
 Usually this is to your user's `.config` folder, so you should run the following
 command. Notice the `.`, this is meant to source the script to your
