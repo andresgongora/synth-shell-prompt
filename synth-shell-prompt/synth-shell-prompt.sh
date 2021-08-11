@@ -154,7 +154,11 @@ getTerraform()
 
 getPyenv()
 {
-	if [ -n "$VIRTUAL_ENV" ]; then
+	## Conda environment
+	if [ -n "$CONDA_DEFAULT_ENV" ]; then
+		echo "$CONDA_DEFAULT_ENV"
+	## Python virtual environment
+	elif [ -n "$VIRTUAL_ENV" ]; then
 		local pyenv=$(basename ${VIRTUAL_ENV})
 		echo "$pyenv"
 	fi
