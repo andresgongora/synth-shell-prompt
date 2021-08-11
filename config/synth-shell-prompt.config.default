@@ -7,12 +7,13 @@
 ## -  HOST: shows the host's name.
 ## -   PWD: shows the current directory.
 ## -   GIT: if inside a git repository, shows the name of current branch.
-## - PYENV: if inside a Python Virtual environment
-## -    TF: if inside a Terraform Workspace
+## - PYENV: if inside a Python Virtual environment.
+## -    TF: if inside a Terraform Workspace.
+## - CLOCK: shows current time in H:M format.
 ## - INPUT: actual bash input.
-## 
+##
 ## Valid color options:
-## - white black light-gray dark-gray 
+## - white black light-gray dark-gray
 ##   red green yellow blue cyan purple
 ##   light-red light-green light-yellow light-blue light-cyan light-purple
 ## - Values in the range [0-255] for 256 bit colors. To check all number-color
@@ -48,6 +49,10 @@ font_color_tf="purple"
 background_tf="light-purple"
 texteffect_tf="bold"
 
+font_color_clock="white"
+background_clock="light-blue"
+texteffect_clock="bold"
+
 font_color_input="45"
 background_input="none"
 texteffect_input="bold"
@@ -80,4 +85,3 @@ git_symbol_dirty=' □'
 git_symbol_dirty_unpushed=' △'
 git_symbol_dirty_unpulled=' ▽'
 git_symbol_dirty_unpushedunpulled=' ○'
-

@@ -24,7 +24,7 @@
 ##	DESCRIPTION
 ##
 ##	This script updates your "PS1" environment variable to display colors.
-##	Additionally, it also shortens the name of your current path to a 
+##	Additionally, it also shortens the name of your current path to a
 ##	maximum 25 characters, which is quite useful when working in deeply
 ##	nested folders.
 ##
@@ -71,7 +71,7 @@ synth_shell_prompt()
 ##		up to date	SSP_GIT_SYNCED		SSP_GIT_DIRTY
 ##		ahead		SSP_GIT_AHEAD		SSP_GIT_DIRTY_AHEAD
 ##		behind		SSP_GIT_BEHIND		SSP_GIT_DIRTY_BEHIND
-##		diverged	SSP_GIT_DIVERGED	SSP_GIT_DIRTY_DIVERGED		
+##		diverged	SSP_GIT_DIVERGED	SSP_GIT_DIRTY_DIVERGED
 ##
 ##	Returns an empty string otherwise.
 ##
@@ -131,10 +131,10 @@ getGitBranch()
 
 
 			## RETURN STRING
-			echo "$branch$symbol"	
+			echo "$branch$symbol"
 		fi
 	fi
-	
+
 	## DEFAULT
 	echo ""
 }
@@ -193,9 +193,10 @@ get_colors_for_element()
 		"GIT")   echo "${SSP_COLORS_GIT[@]}"  ;;
 		"PYENV") echo "${SSP_COLORS_PYENV[@]}";;
 		"TF")    echo "${SSP_COLORS_TF[@]}"   ;;
+		"CLOCK") echo "${SSP_COLORS_CLOCK[@]}";;
 		"INPUT") echo "${SSP_COLORS_INPUT[@]}";;
 		*)
-	esac 
+	esac
 }
 
 
@@ -215,6 +216,7 @@ combine_elements()
 		"GIT")   local text="$git_branch" ;;
 		"PYENV") local text="$pyenv" ;;
 		"TF")    local text="$tf" ;;
+		"CLOCK") local text="$clock" ;;
 		"INPUT") local text="" ;;
 		*)       local text="" ;;
 	esac
@@ -245,6 +247,7 @@ prompt_command_hook()
 	local git_branch="$(getGitBranch)"
 	local pyenv="$(getPyenv)"
 	local tf="$(getTerraform)"
+	local clock="$(date +"%H:%M")"
 
 
 	## ADAPT DYNAMICALLY ELEMENTS TO BE SHOWN
@@ -254,7 +257,7 @@ prompt_command_hook()
 	if [ -z "$git_branch" ]; then
 		elements=( ${elements[@]/"GIT"} ) # Remove GIT from elements to be shown
 	fi
-	
+
 	if [ -z "$pyenv" ]; then
 		elements=( ${elements[@]/"PYENV"} ) # Remove PYENV from elements to be shown
 	fi
@@ -342,6 +345,7 @@ prompt_command_hook()
 	SSP_COLORS_GIT=($font_color_git $background_git $texteffect_git)
 	SSP_COLORS_PYENV=($font_color_pyenv $background_pyenv $texteffect_pyenv)
 	SSP_COLORS_TF=($font_color_tf $background_tf $texteffect_tf)
+	SSP_COLORS_CLOCK=($font_color_clock $background_clock $texteffect_clock)
 	SSP_COLORS_INPUT=($font_color_input $background_input $texteffect_input)
 	SSP_VERTICAL_PADDING=$vertical_padding
 
