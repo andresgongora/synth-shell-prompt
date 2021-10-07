@@ -70,7 +70,7 @@ prompt_horizontal_padding=''    #
 prompt_final_padding=''         #
 segment_padding=' '             #
 enable_vertical_padding=true    # Add extra new line over prompt
-
+max_pwd_char="20"
 
 
 ##==============================================================================
