@@ -119,7 +119,7 @@ getGitBranch()
 					local current_timestamp=$(date +%s)
 					local elapsed_minutes=$(((current_timestamp-git_last_update)/60))
 					if [ "$elapsed_minutes" -ge "$SSP_GIT_UPDATE_PERIOD_MINUTES" ]; then
-						git fetch --depth=1 > /dev/null 2>&1 &
+						git fetch --recurse-submodules > /dev/null 2>&1 &
 					fi
 				fi
 			fi
