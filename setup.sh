@@ -48,12 +48,12 @@ if [ "$#" -eq 0 ]; then
 	OUTPUT_SCRIPT="$HOME/.config/synth-shell/synth-shell-prompt.sh"
 	OUTPUT_CONFIG_DIR="$HOME/.config/synth-shell"
 	USER_CHOICE=""
-		
+
 elif [ "$#" -eq 2 ]; then
 	OUTPUT_SCRIPT="$1"
 	OUTPUT_CONFIG_DIR="$2"
 	USER_CHOICE="y"
-	
+
 else
 	printError "Wrong number of arguments passed to setup script"
 	exit 1
@@ -103,11 +103,11 @@ OUTPUT_SCRIPT_HEADER=$(printf '%s'\
 	"##  https://github.com/andresgongora/synth-shell/\n"\
 	"##\n"\
 	"##\n\n\n")
-	
-	
-	
-	
-	
+
+
+
+
+
 
 ##==============================================================================
 ##	EMPLACE CONFIGURATION FILES
@@ -131,4 +131,3 @@ if [ -f "$CONFIG_FILE" ]; then
 fi
 
 cp "$INPUT_CONFIG_DIR/synth-shell-prompt.config.default" "$CONFIG_FILE"
-

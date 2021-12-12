@@ -85,4 +85,4 @@ git_symbol_dirty=' ◔'
 git_symbol_dirty_unpushed=' ◔ △'
 git_symbol_dirty_unpulled=' ◔ ▽'
 git_symbol_dirty_unpushedunpulled=' ◔ ◇'
-git_update_period_minutes=1	# Use -1 to disable automatic updates
+git_update_period_minutes=15	# Use -1 to disable automatic updates

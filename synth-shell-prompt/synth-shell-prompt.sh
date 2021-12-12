@@ -88,6 +88,43 @@ getGitBranch()
 
 		if [[ -n "$branch" ]]; then
 
+			## UPDATE LOCAL GIT BRANCH (i.e., fetch)
+			## This will talk to the remote repository to get the latest
+			## updates. Because doing so for every terminal prompt can
+			## (and will) be slow, the script will do so only if its globaly
+			## enabled and only periodically in the background.
+			if [ "$SSP_GIT_UPDATE_PERIOD_MINUTES" -ge 0 ]; then
+				## Find .git
+				local d="$PWD"
+				local max_lvls=25
+				while [ ! -e "./.git" -a $max_lvls -gt 0 ]; do
+					cd .. # Go up 1 level
+					max_lvls=$((max_lvls - 1))
+				done
+				local dot_git="${PWD}/.git"
+				cd "$d"
+
+				## Check if submodule
+				if [ -f "$dot_git" ]; then
+					local dot_git=$(cat $dot_git | grep 'gitdir' | sed 's/gitdir:\ //g')
+				fi
+
+				## Get timestamp
+				if [ -d "$dot_git" ]; then
+					local git_last_update=$(stat -c "%Y" "${dot_git}/FETCH_HEAD")
+				fi
+
+				## Update if it's time to do so
+				if [ ! -z $git_last_update ]; then
+					local current_timestamp=$(date +%s)
+					local elapsed_minutes=$(((current_timestamp-git_last_update)/60))
+					if [ "$elapsed_minutes" -ge "$SSP_GIT_UPDATE_PERIOD_MINUTES" ]; then
+						git fetch --depth=1 > /dev/null 2>&1 &
+					fi
+				fi
+			fi
+
+
 			## GET GIT STATUS
 			## This information contains whether the current branch is
 			## ahead, behind or diverged (ahead & behind), as well as
@@ -362,6 +399,7 @@ prompt_command_hook()
 	SSP_GIT_DIRTY_AHEAD=$git_symbol_dirty_unpushed
 	SSP_GIT_DIRTY_BEHIND=$git_symbol_dirty_unpulled
 	SSP_GIT_DIRTY_DIVERGED=$git_symbol_dirty_unpushedunpulled
+	SSP_GIT_UPDATE_PERIOD_MINUTES=$git_update_period_minutes
 
 
 	## For terminal line coloring, leaving the rest standard
