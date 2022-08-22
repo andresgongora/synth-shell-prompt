@@ -196,8 +196,8 @@ getPyenv()
 		echo "$CONDA_DEFAULT_ENV"
 	## Python virtual environment
 	elif [ -n "${VIRTUAL_ENV:-}" ]; then
-        REGEX='PS1=\"\((.*?)\)\s\$\{PS1'
-        local pyenv=$(cat $VIRTUAL_ENV/bin/activate | perl -n -e"/$REGEX/ && print \$1" 2> /dev/null)
+        local regex='PS1=\"\((.*?)\)\s\$\{PS1'
+        local pyenv=$(cat $VIRTUAL_ENV/bin/activate | perl -n -e"/$regex/ && print \$1" 2> /dev/null)
         if [ -z "${pyenv}" ]; then
             local pyenv=$(basename ${VIRTUAL_ENV})
         fi
