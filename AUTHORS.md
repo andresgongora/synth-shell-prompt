@@ -30,16 +30,19 @@ You may add your name, email, a link to your personal web-site/blog/profile
 *	**mcgillij**  
 	2021 - Support for Python environments and terraform, and other fixes
 
-	
+
 *	**Sami Olmari**  
 	<sami@olmari.fi>  
 	www.olmari.fi  
 	2019 - Major improvements to `status.sh`
-	
-	
+
+
 *	**PeterJRiches**  
 	2019 - Proofreading of comments and explanation fixes
 
+
+* **Dhia Hmila**
+	2022 - Use Python environment's alternative name if it exists
 
 	
 
