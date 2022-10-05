@@ -23,7 +23,7 @@
 ##
 ##==============================================================================
 
-format="USER HOST PWD GIT PYENV TF"
+format="USER HOST PWD GIT PYENV TF KUBE"
 
 font_color_user="white"
 background_user="blue"
@@ -44,6 +44,10 @@ texteffect_git="bold"
 font_color_pyenv="white"
 background_pyenv="blue"
 texteffect_pyenv="bold"
+
+font_color_kube="white"
+background_kube="purple"
+texteffect_kube="bold"
 
 font_color_tf="purple"
 background_tf="light-purple"

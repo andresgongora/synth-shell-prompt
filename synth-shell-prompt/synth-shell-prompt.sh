@@ -205,7 +205,12 @@ getPyenv()
 	fi
 }
 
-
+getKube()
+{
+	type kubectl &>/dev/null && \
+	type yq &>/dev/null && \
+	echo -n "$(kubectl config view | yq '.contexts[].context.cluster |select(.contexts[].name == .current-context)' | head -n 1)"	
+}
 
 printSegment()
 {
@@ -237,6 +242,7 @@ get_colors_for_element()
 		"PWD")   echo "${SSP_COLORS_PWD[@]}"  ;;
 		"GIT")   echo "${SSP_COLORS_GIT[@]}"  ;;
 		"PYENV") echo "${SSP_COLORS_PYENV[@]}";;
+		"KUBE")  echo "${SSP_COLORS_KUBE[@]}";;
 		"TF")    echo "${SSP_COLORS_TF[@]}"   ;;
 		"CLOCK") echo "${SSP_COLORS_CLOCK[@]}";;
 		"INPUT") echo "${SSP_COLORS_INPUT[@]}";;
@@ -260,6 +266,7 @@ combine_elements()
 		"PWD")   local text="$path" ;;
 		"GIT")   local text="$git_branch" ;;
 		"PYENV") local text="$pyenv" ;;
+		"KUBE")  local text="$kube" ;;
 		"TF")    local text="$tf" ;;
 		"CLOCK") local text="$clock" ;;
 		"INPUT") local text="" ;;
@@ -291,6 +298,7 @@ prompt_command_hook()
 	local path="$(shortenPath "$PWD" $SSP_MAX_PWD_CHAR)"
 	local git_branch="$(getGitBranch)"
 	local pyenv="$(getPyenv)"
+	local kube="$(getKube)"
 	local tf="$(getTerraform)"
 	local clock="$(date +"%H:%M")"
 
@@ -309,6 +317,10 @@ prompt_command_hook()
 
 	if [ -z "$tf" ]; then
 		elements=( ${elements[@]/"TF"} ) # Remove TF from elements to be shown
+	fi
+
+	if [ -z "$kube" ]; then
+		elements=( ${elements[@]/"KUBE"} ) # Remove KUBE from elements to be shown
 	fi
 
 
@@ -389,6 +401,7 @@ prompt_command_hook()
 	SSP_COLORS_PWD=($font_color_pwd $background_pwd $texteffect_pwd)
 	SSP_COLORS_GIT=($font_color_git $background_git $texteffect_git)
 	SSP_COLORS_PYENV=($font_color_pyenv $background_pyenv $texteffect_pyenv)
+	SSP_COLORS_KUBE=($font_color_kube $background_kube $texteffect_kube)
 	SSP_COLORS_TF=($font_color_tf $background_tf $texteffect_tf)
 	SSP_COLORS_CLOCK=($font_color_clock $background_clock $texteffect_clock)
 	SSP_COLORS_INPUT=($font_color_input $background_input $texteffect_input)
