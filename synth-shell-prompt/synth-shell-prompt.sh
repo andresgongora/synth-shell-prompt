@@ -2,7 +2,7 @@
 
 ##  +-----------------------------------+-----------------------------------+
 ##  |                                                                       |
-##  | Copyright (c) 2018-2021, Andres Gongora <mail@andresgongora.com>.     |
+##  | Copyright (c) 2018-2023, Andres Gongora <mail@andresgongora.com>.     |
 ##  |                                                                       |
 ##  | This program is free software: you can redistribute it and/or modify  |
 ##  | it under the terms of the GNU General Public License as published by  |
@@ -60,7 +60,7 @@ synth_shell_prompt()
 
 
 ##------------------------------------------------------------------------------
-##	getGitInfo
+##
 ##	Returns current git branch for current directory, if (and only if)
 ##	the current directory is part of a git repository, and git is installed.
 ##
@@ -176,6 +176,10 @@ getGitBranch()
 	echo ""
 }
 
+
+##------------------------------------------------------------------------------
+##
+##
 getTerraform()
 {
 	## Check if we are in a terraform directory
@@ -189,6 +193,10 @@ getTerraform()
 	fi
 }
 
+
+##------------------------------------------------------------------------------
+##
+##
 getPyenv()
 {
 	## Conda environment
@@ -205,20 +213,30 @@ getPyenv()
 	fi
 }
 
+
+##------------------------------------------------------------------------------
+##
+##
 getKube()
 {
 	type kubectl &>/dev/null && \
 	type yq &>/dev/null && \
-	echo -n "$(kubectl config view | yq '.contexts[].context.cluster |select(.contexts[].name == .current-context)' | head -n 1)"	
+	echo -n "$(kubectl config view | yq '.contexts[].context.cluster |select(.contexts[].name == .current-context)' | head -n 1)"
 }
 
+
+##------------------------------------------------------------------------------
+##
+## Print each word of the propmpt, i.e., a small text acompanied by the
+## separator character and formated with colors and background.
+##
 printSegment()
 {
 	## GET PARAMETERS
 	local text=$1
 	local font_color=$2
 	local background_color=$3
-	local next_background_color=$4
+	local next_background_color=$4 # needed for the separator, it participates in this and the next text segment
 	local font_effect=$5
 
 
@@ -233,7 +251,9 @@ printSegment()
 }
 
 
-
+##------------------------------------------------------------------------------
+##
+##
 get_colors_for_element()
 {
 	case $1 in
@@ -251,7 +271,9 @@ get_colors_for_element()
 }
 
 
-
+##------------------------------------------------------------------------------
+##
+##
 combine_elements()
 {
 	local first=$1
@@ -284,6 +306,8 @@ combine_elements()
 
 
 
+
+
 ##==============================================================================
 ##	HOOK
 ##==============================================================================
@@ -295,7 +319,7 @@ prompt_command_hook()
 	local elements=(${SSP_ELEMENTS[@]})
 	local user=$USER
 	local host=$HOSTNAME
-	local path="$(shortenPath "$PWD" $SSP_MAX_PWD_CHAR)"
+	local path="$(shortenPath "$PWD" $SSP_MAX_PWD_CHAR)" # bash-tools::shortenPath
 	local git_branch="$(getGitBranch)"
 	local pyenv="$(getPyenv)"
 	local kube="$(getKube)"
@@ -430,13 +454,11 @@ prompt_command_hook()
 	## just before Bash displays a prompt.
 	## We want it to call our own command to truncate PWD and store it in NEW_PWD
 	PROMPT_COMMAND=prompt_command_hook
-}
+} # synth_shell_prompt()
 
 
-
-
-
-
+##------------------------------------------------------------------------------
+##
 ## CALL SCRIPT FUNCTION
 ## - CHECK IF SCRIPT IS _NOT_ BEING SOURCED
 ## - CHECK IF COLOR SUPPORTED
