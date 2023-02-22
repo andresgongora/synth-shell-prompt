@@ -319,7 +319,7 @@ prompt_command_hook()
 	local elements=(${SSP_ELEMENTS[@]})
 	local user=$USER
 	local host=$HOSTNAME
-	local path="$(shortenPath "$PWD" $SSP_MAX_PWD_CHAR)" # bash-tools::shortenPath
+	local path="$(shortenPath "$PWD" $SSP_MAX_PWD_CHAR $SSP_PWD_TRUNC_SYMBOL)" # bash-tools::shortenPath
 	local git_branch="$(getGitBranch)"
 	local pyenv="$(getPyenv)"
 	local kube="$(getKube)"
@@ -430,7 +430,8 @@ prompt_command_hook()
 	SSP_COLORS_CLOCK=($font_color_clock $background_clock $texteffect_clock)
 	SSP_COLORS_INPUT=($font_color_input $background_input $texteffect_input)
 	SSP_VERTICAL_PADDING=$vertical_padding
-	SSP_MAX_PWD_CHAR=${max_pwd_char:-20}
+	SSP_MAX_PWD_CHAR=${max_pwd_char:-25}
+	SSP_PWD_TRUNC_SYMBOL=${pwd_trunc_symbol:-"..."}
 
 	SSP_GIT_SYNCED=$git_symbol_synced
 	SSP_GIT_AHEAD=$git_symbol_unpushed
