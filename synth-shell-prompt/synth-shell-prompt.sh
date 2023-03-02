@@ -167,8 +167,13 @@ getGitBranch()
 			fi
 
 
+            ## GET TAG (if any)
+            [[ -n "$(git tag --points-at HEAD)" ]] && local readonly tag=" $(git tag --points-at HEAD)" || local readonly tag=""
+
+
+
 			## RETURN STRING
-			echo "$branch$symbol"
+			echo "$branch$symbol$tag"
 		fi
 	fi
 
