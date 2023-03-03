@@ -2,11 +2,19 @@
 
 This script is part of [synth-shell](https://github.com/andresgongora/synth-shell)
 
-**synth-shell-prompt** is not only fancy, but also useful:
-- Configurable colors and aesthetics.
+**synth-shell-prompt** formats your terminal's prompt as
+shown in the figure below. However, it's not all eye-candy but also useful information:
 - Git statuses (requires pull/push, is dirty, etc.) if inside a directory that
   is part of a git repository.
 - Better separation between user input and command outputs.
+- Configurable colors and aesthetics.
+- PyEnv aware.
+- Intelligent $PWD shortening.
+- And much more!
+
+![screenshot](doc/screenshot.png)
+
+
 
 
 
