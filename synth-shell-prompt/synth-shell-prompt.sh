@@ -329,7 +329,7 @@ prompt_command_hook()
 	local pyenv="$(getPyenv)"
 	local kube="$(getKube)"
 	local tf="$(getTerraform)"
-	local clock="$(date +"%H:%M")"
+	local clock="$(date +"${SSP_CLOCK_FORMAT}")"
 
 
 	## ADAPT DYNAMICALLY ELEMENTS TO BE SHOWN
@@ -447,6 +447,8 @@ prompt_command_hook()
 	SSP_GIT_DIRTY_BEHIND=$git_symbol_dirty_unpulled
 	SSP_GIT_DIRTY_DIVERGED=$git_symbol_dirty_unpushedunpulled
 	SSP_GIT_UPDATE_PERIOD_MINUTES=$git_update_period_minutes
+
+	SSP_CLOCK_FORMAT=${clock_format:-"%H:%M"}
 
 
 	## For terminal line coloring, leaving the rest standard
