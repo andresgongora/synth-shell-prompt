@@ -29,11 +29,12 @@
 ##==============================================================================
 format="USER HOST PWD GIT PYENV TF KUBE"
 
-separator_char='\uE0B0'         # Separation character, '\uE0B0'=triangle
-separator_padding_left=''       # Add char or string to the left of the separator
-separator_padding_right=''      # Add char or string to the right of the separator
-segment_padding=' '             # Add char or string around segment text
-enable_vertical_padding=true    # Add extra new line over prompt
+separator_char='\uE0B0'          # Separation character, '\uE0B0'=triangle
+separator_padding_left=''        # Add char or string to the left of the separator
+separator_padding_right=''       # Add char or string to the right of the separator
+segment_padding=' '              # Add char or string around segment text
+enable_vertical_padding=true     # Add extra new line over prompt
+enable_command_on_new_line=false # Add new line between prompt and command
 
 
 
