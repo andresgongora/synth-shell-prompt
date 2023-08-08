@@ -44,6 +44,10 @@ You may add your name, email, a link to your personal web-site/blog/profile
 * **Dhia Hmila**
 	2022 - Use Python environment's alternative name if it exists
 
+
+* **Santiago Cardona**
+	2023 - Command on new line after the prompt
+
 	
 
 

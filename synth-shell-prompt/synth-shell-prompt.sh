@@ -372,7 +372,7 @@ prompt_command_hook()
 	## INPUT formatting.
 	## Notice that this reuses the PS1 variables over and over again, and appends
 	## all extra formatting elements to the end of it.
-	PS1="${titlebar}${SSP_VERTICAL_PADDING}"
+	PS1="${titlebar}${SSP_VERTICAL_PADDING}${SSP_NEW_LINE_LINK_TOP}"
 	while [ "${#elements[@]}" -gt 1 ]; do
 		local current=${elements[0]}
 		local next=${elements[1]}
@@ -386,7 +386,11 @@ prompt_command_hook()
 	local input_bg=${input_colors[1]}
 	local input_effect=${input_colors[2]}
 	local input_format="\[$(getFormatCode -c $input_color -b $input_bg -e $input_effect)\]"
-	PS1="$PS1 $input_format"
+	local command_start_symbol="${input_format}${SSP_BASH_SYMBOL}"
+
+	## the prompt is then the prompt we build above, the separation between prompt and command and in
+	## the case of a new line inbetween, the corresponding link and $ symbol to start the command.
+	PS1="${PS1}${SSP_PROMPT_COMM_SEP}${SSP_NEW_LINE_LINK_BOTTOM}${command_start_symbol} $input_format"
 
 
 	## Once this point is reached, PS1 is formatted and set. The terminal session
@@ -422,6 +426,19 @@ prompt_command_hook()
 		local vertical_padding=""
 	fi
 
+	## NEW LINE
+	if $enable_command_on_new_line; then
+		local new_line_link_top="╭"
+		local new_line_link_bottom="╰"
+		local prompt_command_separation="\n"
+		local bash_symbol="\$"
+	else
+		local new_line_link_top=""
+		local new_line_link_top=""
+		local prompt_command_separation=""
+		local bash_symbol=""
+	fi
+
 
     ## CONFIG FOR "prompt_command_hook()"
 	SSP_ELEMENTS=($format "INPUT") # Append INPUT to elements that have to be shown
@@ -435,6 +452,10 @@ prompt_command_hook()
 	SSP_COLORS_CLOCK=($font_color_clock $background_clock $texteffect_clock)
 	SSP_COLORS_INPUT=($font_color_input $background_input $texteffect_input)
 	SSP_VERTICAL_PADDING=$vertical_padding
+	SSP_NEW_LINE_LINK_TOP=$new_line_link_top
+	SSP_NEW_LINE_LINK_BOTTOM=$new_line_link_bottom
+	SSP_PROMPT_COMM_SEP=$prompt_command_separation
+	SSP_BASH_SYMBOL=$bash_symbol
 	SSP_MAX_PWD_CHAR=${max_pwd_char:-25}
 	SSP_PWD_TRUNC_SYMBOL=${pwd_trunc_symbol:-"..."}
 

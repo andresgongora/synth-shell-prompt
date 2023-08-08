@@ -79,6 +79,13 @@ folders depending on how you installed **synth-shell**:
 * Current-user only: `~/.config/synth-shell/`
 * System wide: `/etc/synth-shell/`
 
+#### Command in new line
+In addition to having the command-line right after the prompt, it is possible to set-up **synth-shell** to instead display the command on the next line, which looks like this:
+
+![next_line_command](doc/next_line_command.png)
+
+
+This can be achieved by changing the option `enable_command_on_new_line=false` to `enable_command_on_new_line=true` on the `MAIN FORMAT` section of the `synth-shell-prompt.config` file.
 
 
 
