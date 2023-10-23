@@ -171,9 +171,16 @@ getGitBranch()
             [[ -n "$(git tag --points-at HEAD)" ]] && local readonly tag=" $(git tag --points-at HEAD)" || local readonly tag=""
 
 
+            ## CHECK IF REPOSITORY HAS STASHED CODE
+            local git_stash=""
+            local readonly stashed_elements=$(git stash list 2> /dev/null | wc -l)
+            if [ "$stashed_elements" -gt 0 ]; then
+                git_stash=" ${stashed_elements}${SSP_GIT_STASH}"
+            fi
+
 
 			## RETURN STRING
-			echo "$branch$symbol$tag"
+			echo "${branch}$symbol${git_stash}${tag}"
 		fi
 	fi
 
@@ -467,6 +474,7 @@ prompt_command_hook()
 	SSP_GIT_DIRTY_AHEAD=$git_symbol_dirty_unpushed
 	SSP_GIT_DIRTY_BEHIND=$git_symbol_dirty_unpulled
 	SSP_GIT_DIRTY_DIVERGED=$git_symbol_dirty_unpushedunpulled
+	SSP_GIT_STASH=$git_symbol_stash
 	SSP_GIT_UPDATE_PERIOD_MINUTES=$git_update_period_minutes
 
 	SSP_CLOCK_FORMAT=${clock_format:-"%H:%M"}
