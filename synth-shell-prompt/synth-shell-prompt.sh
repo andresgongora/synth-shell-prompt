@@ -2,7 +2,7 @@
 
 ##  +-----------------------------------+-----------------------------------+
 ##  |                                                                       |
-##  | Copyright (c) 2018-2023, Andres Gongora <mail@andresgongora.com>.     |
+##  | Copyright (c) 2018-2024, Andres Gongora <mail@andresgongora.com>.     |
 ##  |                                                                       |
 ##  | This program is free software: you can redistribute it and/or modify  |
 ##  | it under the terms of the GNU General Public License as published by  |
@@ -21,21 +21,16 @@
 
 
 ##
-##	DESCRIPTION
+## @brief Add colors and extra info to your terminal prompt.
 ##
-##	This script updates your "PS1" environment variable to display colors.
-##	Additionally, it also shortens the name of your current path to a
-##	maximum 25 characters, which is quite useful when working in deeply
-##	nested folders.
+## This script sets your "PS1" environment variable to display colors.
+## Additionally, it also shortens the name of your current path to a
+## maximum 25 characters, which is quite useful when working in deeply
+## nested folders, provides info about git (if you are in a git repository),
+## and python virtual environments (if you are in one).
 ##
+## @see http://tldp.org/HOWTO/Bash-Prompt-HOWTO/index.html
 ##
-##
-##	REFFERENCES
-##
-##	* http://tldp.org/HOWTO/Bash-Prompt-HOWTO/index.html
-##
-##
-
 
 
 ##==============================================================================
@@ -80,112 +75,108 @@ synth_shell_prompt()
 ##
 getGitBranch()
 {
-	if ( which git > /dev/null 2>&1 ); then
+    ## Check if git is installed, otherwise skip this function so as to not
+    ## generate any errors.
+    if ! ( which git > /dev/null 2>&1 ); then
+        echo ""
+        return
+    fi
 
-		## CHECK IF IN A GIT REPOSITORY, OTHERWISE SKIP
-		local branch=$(git branch 2> /dev/null |\
-		             sed -n '/^[^*]/d;s/*\s*\(.*\)/\1/p')
+    ## Check if in a git respository, otherwise skip since there is no info
+    ## to print.
+    local branch=$(git branch 2> /dev/null |\
+            sed -n '/^[^*]/d;s/*\s*\(.*\)/\1/p')
+    if [[ -z "$branch" ]]; then
+        echo ""
+        return
+    fi
 
-		if [[ -n "$branch" ]]; then
+    ## Fetch branch, required to later determine if the local dir is up to date.
+    ## Because doing so for every terminal prompt can be slow, the script will
+    ## do so only if its globaly enabled (see config) and only periodically in
+    ## the background.
+    if [ "$SSP_GIT_UPDATE_PERIOD_MINUTES" -ge 0 ]; then
+        ## Find .git, i.e., the root of the repository.
+        local d="$PWD"
+        local max_lvls=25
+        while [ ! -e "./.git" -a $max_lvls -gt 0 ]; do
+            cd .. # Go up 1 level
+            max_lvls=$((max_lvls - 1))
+        done
+        local dot_git="${PWD}/.git"
+        cd "$d"
 
-			## UPDATE LOCAL GIT BRANCH (i.e., fetch)
-			## This will talk to the remote repository to get the latest
-			## updates. Because doing so for every terminal prompt can
-			## (and will) be slow, the script will do so only if its globaly
-			## enabled and only periodically in the background.
-			if [ "$SSP_GIT_UPDATE_PERIOD_MINUTES" -ge 0 ]; then
-				## Find .git
-				local d="$PWD"
-				local max_lvls=25
-				while [ ! -e "./.git" -a $max_lvls -gt 0 ]; do
-					cd .. # Go up 1 level
-					max_lvls=$((max_lvls - 1))
-				done
-				local dot_git="${PWD}/.git"
-				cd "$d"
+        ## Check if submodule.
+        if [ -f "$dot_git" ]; then
+            local dot_git=$(cat $dot_git | grep 'gitdir' | sed 's/gitdir:\ //g')
+        fi
 
-				## Check if submodule
-				if [ -f "$dot_git" ]; then
-					local dot_git=$(cat $dot_git | grep 'gitdir' | sed 's/gitdir:\ //g')
-				fi
+        ## Get timestamp.
+        if [ -d "$dot_git" -a -e "${dot_git}/FETCH_HEAD" ]; then
+            local git_last_update=$(stat -c "%Y" "${dot_git}/FETCH_HEAD")
+        fi
 
-				## Get timestamp
-				if [ -d "$dot_git" -a -e "${dot_git}/FETCH_HEAD" ]; then
-					local git_last_update=$(stat -c "%Y" "${dot_git}/FETCH_HEAD")
-				fi
-
-				## Update if it's time to do so
-				if [ ! -z $git_last_update ]; then
-					local current_timestamp=$(date +%s)
-					local elapsed_minutes=$(((current_timestamp-git_last_update)/60))
-					if [ "$elapsed_minutes" -ge "$SSP_GIT_UPDATE_PERIOD_MINUTES" ]; then
-						git fetch --recurse-submodules > /dev/null 2>&1 &
-					fi
-				fi
-			fi
-
-
-			## GET GIT STATUS
-			## This information contains whether the current branch is
-			## ahead, behind or diverged (ahead & behind), as well as
-			## whether any file has been modified locally (is dirty).
-			## --porcelain: script friendly output.
-			## -b:          show branch tracking info.
-			## -u no:       do not list untracked/dirty files
-			## From the first line we get whether we are synced, and if
-			## there are more lines, then we know it is dirty.
-			## NOTE: this requires that you fetch your repository,
-			##       otherwise your information is outdated.
-			local is_dirty=false &&\
-				       [[ -n "$(git status --porcelain)" ]] &&\
-				       is_dirty=true
-			local is_ahead=false &&\
-				       [[ "$(git status --porcelain -u no -b)" == *"ahead"* ]] &&\
-				       is_ahead=true
-			local is_behind=false &&\
-				        [[ "$(git status --porcelain -u no -b)" == *"behind"* ]] &&\
-				        is_behind=true
-
-
-			## SELECT SYMBOL
-			if   $is_dirty && $is_ahead && $is_behind; then
-				local symbol=$SSP_GIT_DIRTY_DIVERGED
-			elif $is_dirty && $is_ahead; then
-				local symbol=$SSP_GIT_DIRTY_AHEAD
-			elif $is_dirty && $is_behind; then
-				local symbol=$SSP_GIT_DIRTY_BEHIND
-			elif $is_dirty; then
-				local symbol=$SSP_GIT_DIRTY
-			elif $is_ahead && $is_behind; then
-				local symbol=$SSP_GIT_DIVERGED
-			elif $is_ahead; then
-				local symbol=$SSP_GIT_AHEAD
-			elif $is_behind; then
-				local symbol=$SSP_GIT_BEHIND
-			else
-				local symbol=$SSP_GIT_SYNCED
-			fi
-
-
-            ## GET TAG (if any)
-            [[ -n "$(git tag --points-at HEAD)" ]] && local readonly tag=" $(git tag --points-at HEAD)" || local readonly tag=""
-
-
-            ## CHECK IF REPOSITORY HAS STASHED CODE
-            local git_stash=""
-            local readonly stashed_elements=$(git stash list 2> /dev/null | wc -l)
-            if [ "$stashed_elements" -gt 0 ]; then
-                git_stash=" ${stashed_elements}${SSP_GIT_STASH}"
+        ## Update if it's time to do so.
+        if [ ! -z $git_last_update ]; then
+            local current_timestamp=$(date +%s)
+            local elapsed_minutes=$(((current_timestamp-git_last_update)/60))
+            if [ "$elapsed_minutes" -ge "$SSP_GIT_UPDATE_PERIOD_MINUTES" ]; then
+                git fetch --recurse-submodules > /dev/null 2>&1 &
             fi
+        fi
+    fi
 
+    ## Get repository status.
+    ## This information contains whether the current branch is ahead, behind or
+    ## diverged (ahead & behind), as well as whether any file has been modified
+    ## locally (is dirty).
+    ## @note The repository must be fetched for this information to be accurate.
+    ## @note The following git flags are used:
+    ##      --porcelain: script friendly output.
+    ##      -b:          show branch tracking info.
+    ##      -u no:       do not list untracked/dirty files.
+    local is_dirty=false &&\
+                [[ -n "$(git status --porcelain)" ]] &&\
+                is_dirty=true
+    local is_ahead=false &&\
+                [[ "$(git status --porcelain -u no -b)" == *"ahead"* ]] &&\
+                is_ahead=true
+    local is_behind=false &&\
+                [[ "$(git status --porcelain -u no -b)" == *"behind"* ]] &&\
+                is_behind=true
 
-			## RETURN STRING
-			echo "${branch}$symbol${git_stash}${tag}"
-		fi
-	fi
+    ## Determine symbol to show in prompt according to git status.
+    if   $is_dirty && $is_ahead && $is_behind; then
+        local symbol=$SSP_GIT_DIRTY_DIVERGED
+    elif $is_dirty && $is_ahead; then
+        local symbol=$SSP_GIT_DIRTY_AHEAD
+    elif $is_dirty && $is_behind; then
+        local symbol=$SSP_GIT_DIRTY_BEHIND
+    elif $is_dirty; then
+        local symbol=$SSP_GIT_DIRTY
+    elif $is_ahead && $is_behind; then
+        local symbol=$SSP_GIT_DIVERGED
+    elif $is_ahead; then
+        local symbol=$SSP_GIT_AHEAD
+    elif $is_behind; then
+        local symbol=$SSP_GIT_BEHIND
+    else
+        local symbol=$SSP_GIT_SYNCED
+    fi
 
-	## DEFAULT
-	echo ""
+    ## Get commit tag (if any).
+    [[ -n "$(git tag --points-at HEAD)" ]] &&\
+            local tag=" $(git tag --points-at HEAD)" || local tag=""
+
+    ## Get stash count (if any).
+    local git_stash=""
+    local stashed_elements=$(git stash list 2> /dev/null | wc -l)
+    if [ "$stashed_elements" -gt 0 ]; then
+        git_stash=" ${stashed_elements}${SSP_GIT_STASH}"
+    fi
+
+    ## Return assembled prompt segmet with git info.
+    echo "${branch}$symbol${git_stash}${tag}"
 }
 
 
@@ -194,15 +185,21 @@ getGitBranch()
 ##
 getTerraform()
 {
-	## Check if we are in a terraform directory
-	if [ -d .terraform ]; then
-		## Check if the terraform binary is in the path
-		if ( which terraform > /dev/null 2>&1 ); then
-			## Get the terraform workspace
-			local tf="$(terraform workspace show 2> /dev/null | tr -d '\n')"
-			echo "$tf"
-		fi
-	fi
+    ## Check if terraform is installed, otherwise skip this function.
+    if ! ( which terraform > /dev/null 2>&1 ); then
+        echo ""
+        return
+    fi
+
+    ## Check if we are in a terraform directory, otherwise skip.
+    if [ ! -d .terraform ]; then
+        echo ""
+        return
+    fi
+
+    ## Get the terraform workspace
+    local tf="$(terraform workspace show 2> /dev/null | tr -d '\n')"
+    echo "$tf"
 }
 
 
@@ -217,7 +214,8 @@ getPyenv()
 	## Python virtual environment
 	elif [ -n "${VIRTUAL_ENV:-}" ]; then
         local regex='PS1=\"\((.*?)\)\s\$\{PS1'
-        local pyenv=$(cat $VIRTUAL_ENV/bin/activate | perl -n -e"/$regex/ && print \$1" 2> /dev/null)
+        local pyenv=$(cat $VIRTUAL_ENV/bin/activate |\
+                perl -n -e"/$regex/ && print \$1" 2> /dev/null)
         if [ -z "${pyenv}" ]; then
             local pyenv=$(basename ${VIRTUAL_ENV})
         fi
