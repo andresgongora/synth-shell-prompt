@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ##  +-----------------------------------+-----------------------------------+
 ##  |                                                                       |
@@ -501,13 +501,13 @@ prompt_command_hook()
 ##	   - Call script
 ## - Unset script
 ## If not running interactively, don't do anything
-if [ -n "$( echo $- | grep i )" ]; then
-
-	if [ "${BASH_SOURCE[0]}" == "${0}" ]; then
+if [ "${BASH_SOURCE[0]}" == "${0}" ]; then
 		echo -e "Do not run this script, it will do nothing.\nPlease source it instead by running:\n"
 		echo -e "\t. ${BASH_SOURCE[0]}\n"
+        exit
 
-	elif [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+elif [ -n "$( echo $- | grep i )" ]; then
+	if command -v tput >/dev/null 2>&1 && tput setaf 1 >&/dev/null; then
 		synth_shell_prompt
 	fi
 	unset synth_shell_prompt
