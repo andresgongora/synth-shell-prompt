@@ -2,7 +2,7 @@
 
 ##  +-----------------------------------+-----------------------------------+
 ##  |                                                                       |
-##  | Copyright (c) 2018-2024, Andres Gongora <mail@andresgongora.com>.     |
+##  | Copyright (c) 2018-2026, Andres Gongora <mail@andresgongora.com>.     |
 ##  |                                                                       |
 ##  | This program is free software: you can redistribute it and/or modify  |
 ##  | it under the terms of the GNU General Public License as published by  |
@@ -15,7 +15,7 @@
 ##  | GNU General Public License for more details.                          |
 ##  |                                                                       |
 ##  | You should have received a copy of the GNU General Public License     |
-##  | along with this program. If not, see <http://www.gnu.org/licenses/>.  |
+##  | along with this program. If not, see <https://www.gnu.org/licenses/>.  |
 ##  |                                                                       |
 ##  +-----------------------------------------------------------------------+
 
@@ -82,7 +82,7 @@ getGitBranch()
         return
     fi
 
-    ## Check if in a git respository, otherwise skip since there is no info
+    ## Check if in a git repository, otherwise skip since there is no info
     ## to print.
     local branch=$(git branch 2> /dev/null |\
             sed -n '/^[^*]/d;s/*\s*\(.*\)/\1/p')
@@ -93,7 +93,7 @@ getGitBranch()
 
     ## Fetch branch, required to later determine if the local dir is up to date.
     ## Because doing so for every terminal prompt can be slow, the script will
-    ## do so only if its globaly enabled (see config) and only periodically in
+    ## do so only if it is globally enabled (see config) and only periodically in
     ## the background.
     if [ "$SSP_GIT_UPDATE_PERIOD_MINUTES" -ge 0 ]; then
         ## Find .git, i.e., the root of the repository.
@@ -175,7 +175,7 @@ getGitBranch()
         git_stash=" ${stashed_elements}${SSP_GIT_STASH}"
     fi
 
-    ## Return assembled prompt segmet with git info.
+    ## Return assembled prompt segment with git info.
     echo "${branch}$symbol${git_stash}${tag}"
 }
 
@@ -237,8 +237,8 @@ getKube()
 
 ##------------------------------------------------------------------------------
 ##
-## Print each word of the propmpt, i.e., a small text acompanied by the
-## separator character and formated with colors and background.
+## Print each word of the prompt, i.e., a small text accompanied by the
+## separator character and formatted with colors and background.
 ##
 printSegment()
 {
@@ -393,8 +393,8 @@ prompt_command_hook()
 	local input_format="\[$(getFormatCode -c $input_color -b $input_bg -e $input_effect)\]"
 	local command_start_symbol="${input_format}${SSP_BASH_SYMBOL}"
 
-	## the prompt is then the prompt we build above, the separation between prompt and command and in
-	## the case of a new line inbetween, the corresponding link and $ symbol to start the command.
+	## The prompt is the prompt we build above, with the separation between prompt and command and,
+	## in the case of a new line, the corresponding link and $ symbol to start the command.
 	PS1="${PS1}${SSP_PROMPT_COMM_SEP}${SSP_NEW_LINE_LINK_BOTTOM}${command_start_symbol} $input_format"
 
 

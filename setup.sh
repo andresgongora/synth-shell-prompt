@@ -2,7 +2,7 @@
 
 ##  +-----------------------------------+-----------------------------------+
 ##  |                                                                       |
-##  | Copyright (c) 2019-2021, Andres Gongora <mail@andresgongora.com>.     |
+##  | Copyright (c) 2019-2026, Andres Gongora <mail@andresgongora.com>.     |
 ##  |                                                                       |
 ##  | This program is free software: you can redistribute it and/or modify  |
 ##  | it under the terms of the GNU General Public License as published by  |
@@ -15,7 +15,7 @@
 ##  | GNU General Public License for more details.                          |
 ##  |                                                                       |
 ##  | You should have received a copy of the GNU General Public License     |
-##  | along with this program. If not, see <http://www.gnu.org/licenses/>.  |
+##  | along with this program. If not, see <https://www.gnu.org/licenses/>.  |
 ##  |                                                                       |
 ##  +-----------------------------------------------------------------------+
 
@@ -40,7 +40,7 @@ include 'bash-tools/bash-tools/assemble_script.sh'
 
 
 ##==============================================================================
-##	SELECT SETUP LOCATION (PROMPT USER IF NEED BE)
+##	SELECT SETUP LOCATION (PROMPT USER IF NEEDED)
 ##==============================================================================
 
 ## SWITCH BETWEEN AUTOMATIC AND USER INSTALLATION
@@ -62,7 +62,7 @@ fi
 ## CREATE HOOK
 printInfo "Installing script as $OUTPUT_SCRIPT"
 if [ -z "$USER_CHOICE" ]; then
-	USER_CHOICE=$(promptUser "Add hook your .bashrc file or equivalent?\n\tRequired for autostart on new terminals" "[Y]/[n]?" "yYnN" "y")
+	USER_CHOICE=$(promptUser "Add a hook to your .bashrc file or equivalent?\n\tRequired for autostart on new terminals" "[Y]/[n]?" "yYnN" "y")
 fi
 case "$USER_CHOICE" in
 	""|y|Y )	hookScript $OUTPUT_SCRIPT ;;
@@ -99,7 +99,7 @@ OUTPUT_SCRIPT_HEADER=$(printf '%s'\
 	"##  It might be overwritten without warning at any time\n"\
 	"##  and you will lose all your changes.\n"\
 	"##\n"\
-	"##  Visit for instructions and more information:\n"\
+	"##  Visit this URL for instructions and more information:\n"\
 	"##  https://github.com/andresgongora/synth-shell/\n"\
 	"##\n"\
 	"##\n\n\n")

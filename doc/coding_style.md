@@ -34,7 +34,7 @@ MY_SUPER_STRING="Hello world!"
 ## Local variables
 
 Declare _local_ variables using `local` rather than `declare` or other options.
-Because local variables can not be declared in the main body of the script,
+Because local variables cannot be declared in the main body of the script,
 this will enforce wrapping everything into functions, which is not a bad thing. 
 
 Local variables are named all in lower case and using underscores.
@@ -132,7 +132,7 @@ If adding new lines to separate chunks of code, use either 1, 2, 3 or 6 lines.
 * 3 lines if the code is inside the same function, and the function is  
     complex. In this case, a "header-comment" must be placed above each chunk  
     explaining what it does.
-* 6 lines To separate bigger code sections, like to separate the sections that  
+* 6 lines to separate bigger code sections, like to separate the sections that
     contain functions with similar functionality or intention.
 
 
@@ -148,7 +148,7 @@ If adding new lines to separate chunks of code, use either 1, 2, 3 or 6 lines.
 Please do not call any system binary using only its name - wrap it in `'`, 
 or use `which`. 
 
-For example, do not do call `ls` or `/usr/bin/ls`, as the
+For example, do not call `ls` or `/usr/bin/ls`, as the
 former is susceptible to be aliased by the user to a different command, and the
 latter might have a different path for a different distro. Instead `'ls'` or
 (if need be) `$(which ls)` provide more consistent behaviour.
