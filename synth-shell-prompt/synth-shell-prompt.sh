@@ -36,6 +36,13 @@
 ##==============================================================================
 ##	EXTERNAL DEPENDENCIES
 ##==============================================================================
+if [ "${BASH_SOURCE[0]}" == "${0}" ]; then
+		echo -e "Do not run this script, it will do nothing.\nPlease source it instead by running:\n"
+		echo -e "\t. ${BASH_SOURCE[0]}\n"
+		exit
+elif [[ $- != *i* ]]; then
+		return 0
+fi
 [ "$(type -t include)" != 'function' ]&&{ include(){ { [ -z "$_IR" ]&&_IR="$PWD"&&cd "$(dirname "${BASH_SOURCE[0]}")"&&include "$1"&&cd "$_IR"&&unset _IR;}||{ local d="$PWD"&&cd "$(dirname "$PWD/$1")"&&. "$(basename "$1")"&&cd "$d";}||{ echo "Include failed $PWD->$1"&&exit 1;};};}
 
 include '../bash-tools/bash-tools/color.sh'
@@ -107,8 +114,12 @@ getGitBranch()
         cd "$d"
 
         ## Check if submodule.
-        if [ -f "$dot_git" ]; then
-            local dot_git=$(cat $dot_git | grep 'gitdir' | sed 's/gitdir:\ //g')
+		if [ -f "$dot_git" ]; then
+			local gitdir_path=$(sed -n 's/^gitdir: //p' "$dot_git")
+			if [[ "$gitdir_path" != /* ]]; then
+				gitdir_path="$(cd "$(dirname "$dot_git")/$gitdir_path" && pwd)"
+			fi
+			local dot_git="$gitdir_path"
         fi
 
         ## Get timestamp.
@@ -165,8 +176,11 @@ getGitBranch()
     fi
 
     ## Get commit tag (if any).
-    [[ -n "$(git tag --points-at HEAD)" ]] &&\
-            local tag=" $(git tag --points-at HEAD)" || local tag=""
+    local tags="$(git tag --points-at HEAD | tr '\n' ' ')"
+    local tag=""
+    if [[ -n "${tags// }" ]]; then
+            tag=" ${tags% }"
+    fi
 
     ## Get stash count (if any).
     local git_stash=""
@@ -214,10 +228,10 @@ getPyenv()
 	## Python virtual environment
 	elif [ -n "${VIRTUAL_ENV:-}" ]; then
         local regex='PS1=\"\((.*?)\)\s\$\{PS1'
-        local pyenv=$(cat $VIRTUAL_ENV/bin/activate |\
-                perl -n -e"/$regex/ && print \$1" 2> /dev/null)
-        if [ -z "${pyenv}" ]; then
-            local pyenv=$(basename ${VIRTUAL_ENV})
+		local pyenv=$(cat "$VIRTUAL_ENV/bin/activate" |\
+				perl -n -e"/$regex/ && print \$1" 2> /dev/null)
+		if [ -z "${pyenv}" ]; then
+			local pyenv=$(basename "$VIRTUAL_ENV")
         fi
 		echo "$pyenv"
 	fi
@@ -231,7 +245,7 @@ getKube()
 {
 	type kubectl &>/dev/null && \
 	type yq &>/dev/null && \
-	echo -n "$(kubectl config view | yq '.contexts[].context.cluster |select(.contexts[].name == .current-context)' | head -n 1)"
+		echo -n "$(kubectl config view -o json | yq -r '. as $config | $config.contexts[] | select(.name == $config."current-context") | .context.cluster' | head -n 1)"
 }
 
 
@@ -257,7 +271,7 @@ printSegment()
 
 
 	## GENERATE TEXT
-	printf "${text_format}${segment_padding}${text}${segment_padding}${separator_padding_left}${separator_format}${separator_char}${separator_padding_right}${no_color}"
+	printf '%s' "${text_format}${segment_padding}${text}${segment_padding}${separator_padding_left}${separator_format}${separator_char}${separator_padding_right}${no_color}"
 }
 
 
@@ -415,12 +429,12 @@ prompt_command_hook()
 	local user_config_file="$HOME/.config/synth-shell/synth-shell-prompt.config"
 	local root_config_file="/etc/synth-shell/synth-shell-prompt.root.config"
 	local sys_config_file="/etc/synth-shell/synth-shell-prompt.config"
-	if   [ -f $user_config_file ]; then
-		source $user_config_file
-	elif [ -f $root_config_file  -a "$USER" == "root"  ]; then
-		source $root_config_file
-	elif [ -f $sys_config_file ]; then
-		source $sys_config_file
+	if   [ -f "$user_config_file" ]; then
+		source "$user_config_file"
+	elif [ -f "$root_config_file"  -a "$USER" == "root"  ]; then
+		source "$root_config_file"
+	elif [ -f "$sys_config_file" ]; then
+		source "$sys_config_file"
 	fi
 
 
@@ -479,8 +493,6 @@ prompt_command_hook()
 
 
 	## For terminal line coloring, leaving the rest standard
-	none="$(tput sgr0)"
-	trap 'echo -ne "${none}"' DEBUG
 
 
 	## ADD HOOK TO UPDATE PS1 AFTER EACH COMMAND
@@ -488,7 +500,11 @@ prompt_command_hook()
 	## The contents of this variable are executed as a regular Bash command
 	## just before Bash displays a prompt.
 	## We want it to call our own command to truncate PWD and store it in NEW_PWD
-	PROMPT_COMMAND=prompt_command_hook
+	if declare -p PROMPT_COMMAND 2>/dev/null | grep -q 'declare -a'; then
+		PROMPT_COMMAND+=(prompt_command_hook)
+	else
+		PROMPT_COMMAND="${PROMPT_COMMAND:+${PROMPT_COMMAND};}prompt_command_hook"
+	fi
 } # synth_shell_prompt()
 
 
