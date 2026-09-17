@@ -29,7 +29,7 @@
 ##==============================================================================
 format="USER HOST PWD GIT PYENV TF KUBE"
 
-separator_char='\uE0B0'           # Separation character, '\uE0B0'=triangle
+separator_char=$'\uE0B0'          # Separation character, '\uE0B0'=triangle
 separator_padding_left=''         # Add a character or string to the left of the separator
 separator_padding_right=''        # Add a character or string to the right of the separator
 segment_padding=' '               # Add a character or string around segment text
