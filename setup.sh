@@ -59,6 +59,15 @@ else
 	exit 1
 fi
 
+## CHECK FOR A FONT WITH THE POWERLINE SEPARATOR GLYPH
+if command -v fc-list >/dev/null 2>&1; then
+	if ! fc-list ':charset=E0B0' | grep -q .; then
+		printWarn "No installed font with the Powerline separator glyph (U+E0B0) was found."
+	fi
+else
+	printWarn "Cannot check for the Powerline separator glyph: fc-list is unavailable."
+fi
+
 ## CREATE HOOK
 printInfo "Installing script as $OUTPUT_SCRIPT"
 if [ -z "$USER_CHOICE" ]; then
