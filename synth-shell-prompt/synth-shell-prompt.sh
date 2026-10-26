@@ -223,7 +223,7 @@ getTerraform()
 getPyenv()
 {
 	## Conda environment
-	if [ -n "$CONDA_DEFAULT_ENV" ]; then
+	if [ -n "${CONDA_DEFAULT_ENV:-}" ]; then
 		echo "$CONDA_DEFAULT_ENV"
 	## Python virtual environment
 	elif [ -n "${VIRTUAL_ENV:-}" ]; then

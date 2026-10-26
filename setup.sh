@@ -59,6 +59,15 @@ else
 	exit 1
 fi
 
+## CHECK FOR A FONT WITH THE POWERLINE SEPARATOR GLYPH
+if command -v fc-list >/dev/null 2>&1; then
+	if ! fc-list ':charset=E0B0' | grep -q .; then
+		printWarn "No installed font with the Powerline separator glyph (U+E0B0) was found."
+	fi
+else
+	printWarn "Cannot check for the Powerline separator glyph: fc-list is unavailable."
+fi
+
 ## CREATE HOOK
 printInfo "Installing script as $OUTPUT_SCRIPT"
 if [ -z "$USER_CHOICE" ]; then
@@ -124,9 +133,25 @@ cp -r "$INPUT_CONFIG_DIR/." "$OUTPUT_CONFIG_DIR/"
 
 
 
+## Repair the legacy escape so Bash doesn't expand `\u` as the username in PS1.
+repairSeparatorChar() {
+	local config_file="$1"
+	local config_target
+	config_target=$(readlink -f "$config_file") || {
+		printWarn "Could not resolve $config_file; separator was not repaired."
+		return 0
+	}
+	if [ ! -w "$config_target" ]; then
+		printWarn "Cannot repair $config_file: its target is not writable."
+		return 0
+	fi
+	sed -i "s/separator_char='\\\\uE0B0'/separator_char=\\$'\\\\uE0B0'/" "$config_target"
+}
+
 ## SETUP DEFAULT SYNTH-SHELL-PROMPT CONFIG FILE
 CONFIG_FILE="$OUTPUT_CONFIG_DIR/synth-shell-prompt.config"
 if [ -f "$CONFIG_FILE" ]; then
+	repairSeparatorChar "$CONFIG_FILE"
 	CONFIG_FILE="${CONFIG_FILE}.new"
 fi
 
